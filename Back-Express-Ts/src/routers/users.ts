@@ -1,5 +1,5 @@
 import express from "express";
-import { createUser, readUser, updateUser, deleteUser } from "../controllers/userController";
+import { createUserHandler, readUser, updateUser, deleteUser } from "../controllers/userController";
 
 const userRouter = express.Router();
 
@@ -8,7 +8,7 @@ const userRouter = express.Router();
 // GET 
 userRouter.get("/", readUser);
 // POST
-userRouter.post("/", createUser);
+userRouter.post("/", createUserHandler);
 // PUT 
 userRouter.put("/", updateUser)
 // DELETE 

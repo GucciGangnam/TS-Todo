@@ -51,7 +51,7 @@ export const createUserHandler: RequestHandler[] = [
             // Insert user into the database
             const query2 = 'INSERT INTO users (name, email, hashed_password) VALUES ($1, $2, $3) RETURNING id, name, email';
             const result = await pool.query(query2, [name, email, hashedPassword]);
-            const newUser = result.rows[0]; 
+            const newUser = result.rows[0];
             // Respond
             res.status(201).json({
                 success: true,  // Indicate the success of the operation
@@ -60,6 +60,7 @@ export const createUserHandler: RequestHandler[] = [
             });
             return;
         } catch (err) {
+            console.error(err);  // Log the error for debugging
             next(err);
         }
     }

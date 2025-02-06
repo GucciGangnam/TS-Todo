@@ -75,6 +75,7 @@ export const readUser = async (req: Request, res: Response) => {
 // Update user 
 export const updateUser = async (req: Request, res: Response) => {
     console.log("Updating user")
+    console.log(req.user)
     res.send("Updating user")
 }
 

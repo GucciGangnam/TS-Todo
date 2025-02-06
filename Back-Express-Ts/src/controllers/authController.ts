@@ -6,6 +6,11 @@ import pool from "../database/pool";
 const bcrypt = require('bcrypt');
 const jwt = require('jsonwebtoken');
 
+// Types 
+type UserPayload = {
+    userId: string;
+}
+
 // LOG IN USER
 export const loginUser = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
     try {
@@ -25,8 +30,8 @@ export const loginUser = async (req: Request, res: Response, next: NextFunction)
         if (isMatch) {
             // Create JWT 
             const jwtSecret = process.env.JWT_SECRET;
-            const payload = {
-                userId: user.id,  // Add user info you want to include in the token
+            const payload: UserPayload = {
+                userId: user.id
             };
             const token = jwt.sign(payload, jwtSecret, { expiresIn: '1h' });  // Expiration time 1 hour
             res.status(200).json({
@@ -49,7 +54,21 @@ export const loginUser = async (req: Request, res: Response, next: NextFunction)
 
 // Authentication middlewear
 export const authenticateUser = async (req: Request, res: Response, next: NextFunction) => {
-
+    try {
+        const token = req.headers['authorization']?.split(' ')[1];
+        if (!token) {
+            throw new AppError(403, "Invalid access token", [
+                { field: "authentication", message: "Invalid access token" }
+            ]);
+        }
+        const jwtSecret = process.env.JWT_SECRET;
+        const decoded: UserPayload = jwt.verify(token, jwtSecret) as UserPayload;
+        req.user = decoded.userId
+        next();
+    } catch (err) {
+        console.error(err);
+        next(err);
+    }
 }
 
 // Log Out

@@ -7,7 +7,7 @@ const userRouter = express.Router();
 // ROUTES //
 
 // GET 
-userRouter.get("/", readUser);
+userRouter.get("/", authenticateUser, readUser);
 // POST
 userRouter.post("/", createUserHandler);
 // PUT 

@@ -60,7 +60,9 @@ export const createUserHandler: RequestHandler[] = [
             });
             return;
         } catch (err) {
-            console.error(err);  // Log the error for debugging
+            if (process.env.NODE_ENV !== 'test') {
+                console.error(err);  // Log the error for debugging
+            }
             next(err);
         }
     }

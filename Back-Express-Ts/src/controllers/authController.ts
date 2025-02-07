@@ -66,7 +66,9 @@ export const authenticateUser = async (req: Request, res: Response, next: NextFu
         req.user = decoded.userId
         next();
     } catch (err) {
-        console.error(err);
+        if (process.env.NODE_ENV !== 'test') {
+            console.error(err);
+        }
         next(err);
     }
 }

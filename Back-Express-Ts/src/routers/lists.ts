@@ -1,6 +1,7 @@
 // IMPORTS 
 import express from "express";
 import { readList, createList, updateList, deleteList } from "../controllers/listController";
+import { authenticateUser } from "../controllers/authController"
 
 const listsRouter = express.Router();
 
@@ -9,7 +10,7 @@ const listsRouter = express.Router();
 // GET 
 listsRouter.get("/", readList);
 // POST
-listsRouter.post("/", createList);
+listsRouter.post("/", authenticateUser, createList);
 // PUT 
 listsRouter.put("/", updateList)
 // DELETE 

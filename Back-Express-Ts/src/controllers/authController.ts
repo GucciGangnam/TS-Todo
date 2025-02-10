@@ -33,12 +33,40 @@ export const loginUser = async (req: Request, res: Response, next: NextFunction)
             const payload: UserPayload = {
                 userId: user.id
             };
+            // Create a JWT
             const token = jwt.sign(payload, jwtSecret, { expiresIn: '1h' });  // Expiration time 1 hour
+            // Get user Object ;
+            const userDataQuery = "SELECT name, email FROM users WHERE email = $1"
+            const userDataValues = [email]
+            const userData = await pool.query(userDataQuery, userDataValues);
+            // user data is userData.rows[0] // // // // /// /// // /// // /// / /// / /  
+            // Get lists object ;
+            const listsDataQuery = `SELECT l.id, 
+       COALESCE(l.name, '') AS name, 
+       COALESCE(l.color, '') AS color, 
+       COUNT(t.id) AS task_count
+FROM lists l
+LEFT JOIN tasks t ON l.id = t.list_id
+WHERE l.owner_id = $1
+GROUP BY l.id, l.name, l.color;`;
+            const listsDataValue = [user.id];
+            const listsData = await pool.query(listsDataQuery, listsDataValue);
+            // Get tasks object ;
+
+            const taskDataQuery = 'SELECT * FROM tasks WHERE list_id = ANY (SELECT id FROM lists WHERE owner_id = $1)';
+            const taskDataValue = [user.id];
+            const tasksData = await pool.query(taskDataQuery, taskDataValue);
+
+
+
             res.status(200).json({
                 success: true,
                 message: "Login successful",
-                data: {
-                    token
+                userData: {
+                    authToken: token,
+                    user: userData.rows[0],
+                    lists: listsData.rows,
+                    tasks: tasksData.rows
                 }
             });
             return;

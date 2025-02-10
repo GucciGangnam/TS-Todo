@@ -52,6 +52,7 @@ export const createUserHandler: RequestHandler[] = [
             const query2 = 'INSERT INTO users (name, email, hashed_password) VALUES ($1, $2, $3) RETURNING id, name, email';
             const result = await pool.query(query2, [name, email, hashedPassword]);
             const newUser = result.rows[0];
+            
             // Respond
             res.status(201).json({
                 success: true,  // Indicate the success of the operation
@@ -60,13 +61,15 @@ export const createUserHandler: RequestHandler[] = [
             });
             return;
         } catch (err) {
-            if (process.env.NODE_ENV !== 'test') {
-                console.error(err);  // Log the error for debugging
-            }
             next(err);
         }
     }
 ]
+// Get user data 
+const getUserData = async(userID: string) => { 
+    console.log("fetching data for user" + userID)
+}
+
 
 // Read User 
 export const readUser = async (req: Request, res: Response) => {

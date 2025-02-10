@@ -34,7 +34,6 @@ describe('POST /api/users', () => {
 
         // Check the database to verify the user was created
         const dbResponse = await pool.query('SELECT * FROM users WHERE email = $1', [newUser.email]);
-        console.log(dbResponse.rows); // This will give direct insight into what's happening.
         expect(dbResponse.rows.length).toBe(1);  // Ensure exactly one user is in the database
         expect(dbResponse.rows[0].name).toBe(newUser.name);
         expect(dbResponse.rows[0].email).toBe(newUser.email);

@@ -5,7 +5,7 @@ import pool from "../database/pool";
 
 describe('POST /api/lists', () => {
 
-    let token: string;
+    let authToken: string;
 
     // Clear users before all tests in this block
     beforeAll(async () => {
@@ -26,7 +26,7 @@ describe('POST /api/lists', () => {
             password: 'Password123'
         }
         const loginResponse = await request(app).post('/api/auth/login').send(loginBody);
-        token = loginResponse.body.data.token;
+        authToken = loginResponse.body.userData.authToken;
 
     });
 
@@ -34,7 +34,7 @@ describe('POST /api/lists', () => {
     it('should create a new list when authenticated', async () => {
         const response = await request(app)
             .post('/api/lists')
-            .set('Authorization', `Bearer ${token}`)
+            .set('Authorization', `Bearer ${authToken}`)
             .send({ listName: 'New List' });
 
         expect(response.status).toBe(201);

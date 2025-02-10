@@ -1,6 +1,7 @@
 // IMPORTS
 import express from "express";
 import { readTask, createTask, updateTask, deleteTask } from "../controllers/taskController";
+import { authenticateUser } from "../controllers/authController"
 
 const tasksRouer = express.Router();
 
@@ -9,7 +10,7 @@ const tasksRouer = express.Router();
 // GET 
 tasksRouer.get("/", readTask);
 // POST
-tasksRouer.post("/", createTask);
+tasksRouer.post("/", authenticateUser, createTask);
 // PUT 
 tasksRouer.put("/", updateTask)
 // DELETE 

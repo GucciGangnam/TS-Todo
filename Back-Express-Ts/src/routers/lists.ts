@@ -14,7 +14,7 @@ listsRouter.post("/", authenticateUser, createList);
 // PUT 
 listsRouter.put("/", authenticateUser, updateList)
 // DELETE 
-listsRouter.delete("/", deleteList)
+listsRouter.delete("/", authenticateUser, deleteList)
 
 // EXPORTS
 export default listsRouter;

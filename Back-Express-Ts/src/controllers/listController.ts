@@ -36,7 +36,7 @@ export const readList = async (req: Request, res: Response) => {
 // Update List - REQUIRES: listId
 export const updateList = async (req: Request, res: Response, next: NextFunction) => {
     try {
-console.log("starting UpdateList", req.body.listId, req.body.newColor)
+        console.log("starting UpdateList", req.body.listId, req.body.newColor)
         const userId = req.user;
         const { listId, newColor } = req.body;
         console.log(listId, newColor)
@@ -54,8 +54,6 @@ console.log("starting UpdateList", req.body.listId, req.body.newColor)
             ]);
         }
         if (listResult.rows[0].owner_id !== userId) {
-            console.log(listResult.rows[0].owner_id);
-            console.log(userId);
             throw new AppError(403, "NO permissions for this account", [
                 { field: "authentication", message: "NO permissions to edit this account" }
             ]);
@@ -76,7 +74,28 @@ console.log("starting UpdateList", req.body.listId, req.body.newColor)
 };
 
 // Delete List
-export const deleteList = async (req: Request, res: Response) => {
-    console.log("Deleting list")
-    res.send("Deleting list")
+export const deleteList = async (req: Request, res: Response, next: NextFunction) => {
+    try {
+        const userId = req.user;
+        const listToDelete = req.body.listId;
+        if (!listToDelete) {
+            throw new AppError(404, "List ID is missing", [
+                { field: "input", message: "List ID is missing" }
+            ]);
+        }
+        // Check user owns teh list
+        const result1 = await pool.query('SELECT owner_id FROM lists WHERE id = $1', [listToDelete]);
+        const ownerOfList = result1.rows[0].owner_id;
+        if (ownerOfList !== userId) {
+            throw new AppError(403, "NO permissions for this account", [
+                { field: "authentication", message: "NO permissions to edit this account" }
+            ]);
+        }
+        // Delete list
+        await pool.query("DELETE FROM lists WHERE id = $1", [listToDelete]);
+        res.status(200).json({ success: true, message: "List deleted successfully" });
+
+    } catch (err) {
+        next(err);
+    }
 }

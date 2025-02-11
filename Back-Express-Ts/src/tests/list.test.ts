@@ -92,6 +92,53 @@ describe('PUT .api/lists', () => {
         expect(response.body.data.color).toBe('Blue');
     })
 
-
-
 })
+
+// Delete list
+
+describe('PUT .api/lists', () => {
+
+    // Before 
+        // Before each // Clear DB
+        let authToken: string;
+        let parentListId: string;
+        // Clear users before all tests in this block
+        beforeAll(async () => {
+            // Clear the users table to start fresh
+            await pool.query('DELETE FROM users');
+            const newUserBody = {
+                name: 'Test Task',
+                email: 'testtask@example.com',
+                password: 'Password123'
+            };
+            // Make the POST request to create a user
+            await request(app).post('/api/users').send(newUserBody);
+            // log the normal user in and get jwt 
+            const loginBody = {
+                email: 'testtask@example.com',
+                password: 'Password123'
+            };
+            const loginResponse = await request(app).post('/api/auth/login').send(loginBody);
+            authToken = loginResponse.body.userData.authToken;
+            // CReate new list for users
+            const newList = await request(app).post('/api/lists').set('Authorization', `Bearer ${authToken}`).send({ listName: 'New List' });
+            parentListId = newList.body.data.id;
+
+        });
+
+
+
+
+    it('shoudl delete the list that was passed in and all its subsiquent tasks', async() => { 
+        const response = await request(app)
+        .delete('/api/lists')
+        .set('Authorization', `Bearer ${authToken}`)
+        .send({listId: parentListId})
+
+        expect(response.status).toBe(200);
+        expect(response.body.message).toBe('List deleted successfully');
+    })
+
+
+
+});

@@ -2,6 +2,8 @@ import request from 'supertest';
 import { app } from '../index';
 import pool from '../database/pool';
 
+
+// Post new task 
 describe('POST /api/task', () => {
 
     // Before each // Clear DB
@@ -85,3 +87,70 @@ describe('POST /api/task', () => {
         expect(dbResult.rows.length).toBe(0);
     });
 });
+
+// Update task 
+describe('PUT/api/task', () => {
+
+    // Before each // Clear DB
+    let authToken: string;
+    let parentListId: string;
+    let taskId: string;
+    // Clear users before all tests in this block
+    beforeAll(async () => {
+        // Clear the users table to start fresh
+        await pool.query('DELETE FROM users');
+        const newUserBody = {
+            name: 'Test Update Task',
+            email: 'testtask@example.com',
+            password: 'Password123'
+        };
+        // Make the POST request to create a user
+        await request(app).post('/api/users').send(newUserBody);
+        // log the normal user in and get jwt 
+        const loginBody = {
+            email: 'testtask@example.com',
+            password: 'Password123'
+        };
+        const loginResponse = await request(app).post('/api/auth/login').send(loginBody);
+        authToken = loginResponse.body.userData.authToken;
+        // Ceeate new list for user
+        const newList = await request(app).post('/api/lists').set('Authorization', `Bearer ${authToken}`).send({ listName: 'New List' });
+        parentListId = newList.body.data.id;
+        // Create new task for user
+        const newTask = await request(app).post('/api/tasks').set('Authorization', `Bearer ${authToken}`).send({ taskName: 'New Task', parentListId: parentListId });
+        taskId = newTask.body.data.id;
+    });
+
+    it('should sucesfully update all rows when all passed into the body', async() => { 
+        const timeNow = new Date();
+        const response = await request(app)
+            .put('/api/tasks')
+            .set('Authorization', `Bearer ${authToken}`)
+            .send({
+                taskId: taskId,
+                newName: 'Updated Name',
+                newDescription: "Updated Description",
+                newDueDate: timeNow,
+                newCompleted: true,
+                newImportant: true,
+            });
+            expect(response.status).toBe(200);
+            expect(response.body.updatedTask).toHaveProperty('id');
+            expect(response.body.updatedTask.name).toBe('Updated Name');
+    });
+
+    it('should sucesfully update ONLY the fields that are passed in and not effect the others', async() => { 
+        const response = await request(app)
+            .put('/api/tasks')
+            .set('Authorization', `Bearer ${authToken}`)
+            .send({
+                taskId: taskId,
+                newName: 'Updated Name Only',
+            });
+            expect(response.status).toBe(200);
+            expect(response.body.updatedTask).toHaveProperty('id');
+            expect(response.body.updatedTask.name).toBe('Updated Name Only');
+            expect(response.body.updatedTask.description).toBe('Updated Description');
+    });
+
+})

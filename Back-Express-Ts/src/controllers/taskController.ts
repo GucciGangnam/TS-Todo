@@ -41,16 +41,71 @@ export const createTask = async (req: Request, res: Response, next: NextFunction
     }
 }
 
-// Read Task 
+// Read Task -- Maybe not needed
 export const readTask = async (req: Request, res: Response) => {
     console.log("Reading task")
     res.send("Reading task")
 }
 
-// Update Task 
-export const updateTask = async (req: Request, res: Response) => {
-    console.log("Updating task")
-    res.send("Updating task")
+// Update Task Needs; Name, dexceription, duedate, completed, important
+export const updateTask = async (req: Request, res: Response, next: NextFunction) => {
+    try {
+        // Make sure owner owns this task;
+        const userId = req.user;
+        const taskId = req.body.taskId;
+        // Fetch the task's owner_id
+        const taskOwnerQuery = 'SELECT owner_id FROM tasks WHERE id = $1';
+        const taskOwnerResult = await pool.query(taskOwnerQuery, [taskId]);
+        // If no task is found or the user is not the owner, return an error
+        if (taskOwnerResult.rows.length === 0 || taskOwnerResult.rows[0].owner_id !== userId) {
+            throw new AppError(403, "NO permissions for this account", [
+                { field: "authentication", message: "NO permissiosn to edit this account" }
+            ]);
+        }
+        const { newName, newDescription, newDueDate, newCompleted, newImportant } = req.body;
+        const updates: string[] = [];
+        const values: any[] = [];
+        let index = 1;
+        if (newName !== undefined) {
+            updates.push(`name = $${index}`);
+            values.push(newName);
+            index++;
+        }
+        if (newDescription !== undefined) {
+            updates.push(`description = $${index}`);
+            values.push(newDescription);
+            index++;
+        }
+        if (newDueDate !== undefined) {
+            updates.push(`due_date = $${index}`);
+            values.push(newDueDate);
+            index++;
+        }
+        if (newCompleted !== undefined) {
+            updates.push(`completed = $${index}`);
+            values.push(newCompleted);
+            index++;
+        }
+        if (newImportant !== undefined) {
+            updates.push(`important = $${index}`);
+            values.push(newImportant);
+            index++;
+        }
+        if (updates.length === 0) {
+            throw new AppError(403, "No updated have been given for this task", [
+                { field: "Inputs", message: "No updated have been given for this task" }
+            ]);
+            // return res.status(400).json({ success: false, message: "No fields provided for update" });
+        }
+        // Push taskId at the end with the correct index
+        values.push(taskId);
+        const updateListQuery = `UPDATE tasks SET ${updates.join(", ")} WHERE id = $${index} RETURNING *`;
+        const result = await pool.query(updateListQuery, values);
+        res.status(200).json({ success: true, updatedTask: result.rows[0] });
+        return;
+    } catch (err) {
+        next(err);
+    }
 }
 
 // Delete Task

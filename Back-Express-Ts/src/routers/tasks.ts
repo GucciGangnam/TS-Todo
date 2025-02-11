@@ -12,7 +12,7 @@ tasksRouer.get("/", readTask);
 // POST
 tasksRouer.post("/", authenticateUser, createTask);
 // PUT 
-tasksRouer.put("/", updateTask)
+tasksRouer.put("/", authenticateUser, updateTask)
 // DELETE 
 tasksRouer.delete("/", deleteTask)
 

@@ -116,3 +116,50 @@ describe('POST /api/users', () => {
 
 });
 
+describe('DELETE /api/user', () => {
+
+    let authToken: string;
+    let parentListId: string;
+    // Clear users before all tests in this block
+    beforeAll(async () => {
+        // Clear the users table to start fresh
+        await pool.query('DELETE FROM users');
+        // Create new user
+        const newUserBody = {
+            name: 'Test Delete',
+            email: 'test@example.com',
+            password: 'Password123'
+        };
+        await request(app).post('/api/users').send(newUserBody);
+        // log the user in and get jwt 
+        const loginBody = {
+            email: 'test@example.com',
+            password: 'Password123'
+        }
+        const loginResponse = await request(app).post('/api/auth/login').send(loginBody);
+        authToken = loginResponse.body.userData.authToken;
+        // Create new list for user 
+        const newList = await request(app).post('/api/lists').set('Authorization', `Bearer ${authToken}`).send({ listName: 'New List' });
+        parentListId = newList.body.data.id;
+        // Create 2 new tasks for that list
+        const newTask1 = await request(app).post('/api/tasks').set('Authorization', `Bearer ${authToken}`).send({ taskName: 'New Task1', parentListId: parentListId });
+        const newTask2 = await request(app).post('/api/tasks').set('Authorization', `Bearer ${authToken}`).send({ taskName: 'New Task2', parentListId: parentListId });
+
+
+    });
+
+    it('Should sucesfully delete the user and all their lists and tasks from the database', async () => {
+        const response = await request(app)
+            .delete('/api/users')
+            .set('Authorization', `Bearer ${authToken}`);
+        expect(response.status).toBe(200)
+        expect(response.body.message).toBe("User deleted successfully")
+        const usersInDB = await pool.query("SELECT * FROM users")
+        expect(usersInDB.rows.length).toBe(0);
+        const listsInDb = await pool.query("SELECT * FROM lists");
+        expect(listsInDb.rows.length).toBe(0);
+        const tasksInDb = await pool.query("SELECT * FROM tasks");
+        expect(tasksInDb.rows.length).toBe(0);
+    });
+})
+

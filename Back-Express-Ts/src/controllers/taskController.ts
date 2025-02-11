@@ -7,6 +7,7 @@ import { create } from "domain";
 
 // CONTROLLER //
 // Create Task 
+// Requires body.parentListId, body.taskName
 export const createTask = async (req: Request, res: Response, next: NextFunction) => {
     console.log("Creating task")
     try {

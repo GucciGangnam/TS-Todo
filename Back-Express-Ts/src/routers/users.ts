@@ -13,7 +13,7 @@ userRouter.post("/", createUserHandler);
 // PUT 
 userRouter.put("/", authenticateUser, updateUser)
 // DELETE 
-userRouter.delete("/", deleteUser)
+userRouter.delete("/", authenticateUser, deleteUser)
 
 
 // EXPORT

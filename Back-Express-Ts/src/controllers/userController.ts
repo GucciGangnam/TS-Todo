@@ -52,7 +52,7 @@ export const createUserHandler: RequestHandler[] = [
             const query2 = 'INSERT INTO users (name, email, hashed_password) VALUES ($1, $2, $3) RETURNING id, name, email';
             const result = await pool.query(query2, [name, email, hashedPassword]);
             const newUser = result.rows[0];
-            
+
             // Respond
             res.status(201).json({
                 success: true,  // Indicate the success of the operation
@@ -65,27 +65,31 @@ export const createUserHandler: RequestHandler[] = [
         }
     }
 ]
-// Get user data 
-const getUserData = async(userID: string) => { 
-    console.log("fetching data for user" + userID)
-}
 
-
-// Read User 
+// Read User // This is donr at login. - NOT NEEDED
 export const readUser = async (req: Request, res: Response) => {
     console.log("Reading user")
     res.send("Reading user")
 }
 
-// Update user 
+// Update user -- Maybe dont bopther implementing
 export const updateUser = async (req: Request, res: Response) => {
     console.log("Updating user")
     console.log(req.user)
     res.send("Updating user")
 }
 
-// Delete User
-export const deleteUser = async (req: Request, res: Response) => {
-    console.log("Deleting user")
-    res.send("Deleting user")
+// Delete User - Requires authentification
+export const deleteUser = async (req: Request, res: Response, next: NextFunction) => {
+    try {
+        const userId = req.user;
+        const deleteUserQuery = "DELETE FROM users WHERE id = $1";
+        const deleteUserValues = [userId];
+        await pool.query(deleteUserQuery, deleteUserValues);
+        // Response 
+        res.status(200).json({ success: true, message: "User deleted successfully" });
+        return;
+    } catch (err) {
+        next(err);
+    }
 }

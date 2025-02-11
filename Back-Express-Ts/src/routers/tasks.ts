@@ -14,7 +14,7 @@ tasksRouer.post("/", authenticateUser, createTask);
 // PUT 
 tasksRouer.put("/", authenticateUser, updateTask)
 // DELETE 
-tasksRouer.delete("/", deleteTask)
+tasksRouer.delete("/", authenticateUser, deleteTask)
 
 // EXPORTS
 export default tasksRouer;

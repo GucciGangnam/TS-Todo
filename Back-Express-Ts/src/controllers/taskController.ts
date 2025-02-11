@@ -109,7 +109,30 @@ export const updateTask = async (req: Request, res: Response, next: NextFunction
 }
 
 // Delete Task
-export const deleteTask = async (req: Request, res: Response) => {
-    console.log("Deleting task")
-    res.send("Deleting task")
+export const deleteTask = async (req: Request, res: Response, next: NextFunction) => {
+    try {
+        const userId = req.user;
+        const taskId = req.body.taskId;
+
+        // Make sure task is owned by user
+        const taskResult = await pool.query('SELECT owner_id FROM tasks WHERE id = $1', [taskId]);
+        // If task doesnt exists; 
+        if (!taskResult.rows[0].owner_id) {
+            throw new AppError(404, "Task doesnt exist", [
+                { field: "Bad request", message: "Task doesnt exist" }
+            ]);
+        }
+        const ownerId = taskResult.rows[0]?.owner_id;
+        if (ownerId !== userId) {
+            throw new AppError(403, "NO permissions for this account", [
+                { field: "authentication", message: "NO permissiosn to edit this account" }
+            ]);
+        }
+
+        await pool.query("DELETE FROM tasks WHERE id = $1", [taskId]);
+        res.status(200).json({ success: true, message: "Task deleted successfully" });
+
+    } catch (err) {
+        next(err);
+    }
 }

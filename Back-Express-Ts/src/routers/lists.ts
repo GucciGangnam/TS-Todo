@@ -12,7 +12,7 @@ listsRouter.get("/", readList);
 // POST
 listsRouter.post("/", authenticateUser, createList);
 // PUT 
-listsRouter.put("/", updateList)
+listsRouter.put("/", authenticateUser, updateList)
 // DELETE 
 listsRouter.delete("/", deleteList)
 

@@ -48,3 +48,50 @@ describe('POST /api/lists', () => {
     });
 
 });
+
+
+describe('PUT .api/lists', () => {
+
+    // Before each // Clear DB
+    let authToken: string;
+    let parentListId: string;
+    let taskId: string;
+    // Clear users before all tests in this block
+    beforeAll(async () => {
+        // Clear the users table to start fresh
+        await pool.query('DELETE FROM users');
+        const newUserBody = {
+            name: 'Test Update List',
+            email: 'testlist@example.com',
+            password: 'Password123'
+        };
+        // Make the POST request to create a user
+        await request(app).post('/api/users').send(newUserBody);
+        // log the normal user in and get jwt 
+        const loginBody = {
+            email: 'testlist@example.com',
+            password: 'Password123'
+        };
+        const loginResponse = await request(app).post('/api/auth/login').send(loginBody);
+        authToken = loginResponse.body.userData.authToken;
+        // Ceeate new list for user
+        const newList = await request(app).post('/api/lists').set('Authorization', `Bearer ${authToken}`).send({ listName: 'New List' });
+        parentListId = newList.body.data.id;
+        // Create new task for user
+        const newTask = await request(app).post('/api/tasks').set('Authorization', `Bearer ${authToken}`).send({ taskName: 'New Task', parentListId: parentListId });
+        taskId = newTask.body.data.id;
+    });
+
+    it('Should update the color of the list to blue', async () => {
+        const response = await request(app)
+            .put('/api/lists')
+            .set('Authorization', `Bearer ${authToken}`)
+            .send({ listId: parentListId, newColor: "Blue" });
+
+        expect(response.status).toBe(200);
+        expect(response.body.data.color).toBe('Blue');
+    })
+
+
+
+})

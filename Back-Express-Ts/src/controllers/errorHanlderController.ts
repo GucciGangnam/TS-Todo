@@ -4,7 +4,7 @@ import { Request, Response, NextFunction } from "express";
 import { AppError } from "../utils/appError";
 
 export const errorHandler = (err: any, req: Request, res: Response, next: NextFunction) => {
-    if (process.env.NODE_ENV !== 'test') {
+    if (process.env.NODE_ENV === 'test') {
         console.error(err)
     }
     const statusCode = err.statusCode || 500;

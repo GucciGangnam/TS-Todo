@@ -12,6 +12,12 @@ export const createList = async (req: Request, res: Response, next: NextFunction
         const userId = req.user;
         const listName = req.body.listName;
 
+        if(!listName){ 
+            throw new AppError(404, "list name not provided", [
+                { field: "Input", message: "list name not provided" }
+            ]);
+        }
+
         const query1 = 'INSERT INTO lists (name, color, owner_id) VALUES ($1, $2, $3) RETURNING *';
         const result1 = await pool.query(query1, [listName, 'default', userId])
         const newList = result1.rows[0];

@@ -1,0 +1,36 @@
+:root {
+  --background: #3B3838;
+  --element-fill: #7F7F7F;
+  --primary-text: white;
+  --secondary-text: #BFBFBF;
+  --red: #E66C68;
+  --orange: #F4B183;
+  --yellow: #FFD966;
+  --green: #A9D18E;
+  --blue: #8FAADC;
+  --purple: #E1A0D4;
+
+}
+
+[data-theme='light'] {
+  --background: #3B3838;
+  --element-fill: #7F7F7F;
+  --primary-text: white;
+  --secondary-text: #BFBFBF;
+  --red: #E66C68;
+  --orange: #F4B183;
+  --yellow: #FFD966;
+  --green: #A9D18E;
+  --blue: #8FAADC;
+  --purple: #E1A0D4;
+}
+
+.App{ 
+  width: 100vw;
+  min-height: 100dvh;
+  min-height: 100dvh;
+  max-width: 1500px;
+  background-color: var(--background);
+  font-family: Calibri, sans-serif;
+
+}

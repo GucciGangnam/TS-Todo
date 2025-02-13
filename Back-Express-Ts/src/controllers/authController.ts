@@ -20,7 +20,7 @@ export const loginUser = async (req: Request, res: Response, next: NextFunction)
         // Check that email is associated
         const userExists = await pool.query('SELECT * FROM users WHERE email = $1', [email])
         if (userExists.rows.length < 1) {
-            throw new AppError(409, "Invalid login credentials", [
+            throw new AppError(401, "Invalid login credentials", [
                 { field: "login", message: "Invalid login credentials" }
             ]);
         }
@@ -71,7 +71,7 @@ GROUP BY l.id, l.name, l.color;`;
             });
             return;
         } else {
-            throw new AppError(409, "Invalid login credentials", [
+            throw new AppError(401, "Invalid login credentials", [
                 { field: "login", message: "Invalid login credentials" }
             ]);
         }

@@ -87,13 +87,14 @@
         }
 
         input:focus {
-            outline: 2px solid var(--primary-text);
+            outline: 2px solid rgb(79, 120, 195);
             opacity: 1;
         }
 
         input:valid{ 
-            background-color: var(--green);
-            outline: 2px solid var(--green);
+            opacity: 1;
+            background-color: rgb(79, 120, 195);
+            outline: 2px rgb(79, 120, 195);
         }
 
         .Hidden {
@@ -110,11 +111,15 @@
             transition: 300ms;
             border: none;
             background-color: var(--element-fill);
+            background-color: rgb(79, 120, 195);
             transition: 300ms;
             color: var(--primary-text);
             font-size: 1rem;
             cursor: pointer;
-
+            opacity: 0.5;
+        }
+        button:hover{ 
+            opacity: 1;
         }
     }
 }

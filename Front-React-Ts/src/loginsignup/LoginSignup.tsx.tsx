@@ -3,6 +3,8 @@
 import "./LoginSignup.css";
 // React
 import { useState, useEffect, useRef } from "react";
+// Redux 
+
 // Components 
 import { LoadingScreen } from "./LoadingScreen";
 // Variables
@@ -32,6 +34,8 @@ export const LoginSignup = () => {
     const [email, setEmail] = useState<string>('');
     const [password, setPassword] = useState<string>('');
     const [confirmPassword, setConfirmPassword] = useState<string>('');
+    const [emailPlaceholder, setEmailPlaceholder] = useState('Email')
+    const [passwordPlaceholder, setPasswordPlaceholder] = useState('Password')
 
     // Handle Change States
     const handleChangeStateValue = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -64,7 +68,7 @@ export const LoginSignup = () => {
     const handleFormSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
         e.preventDefault();
 
-        if (password !== confirmPassword) {
+        if ((formState === "Signup") && (password !== confirmPassword)) {
             return;
         }
         setLoading(true);
@@ -88,23 +92,76 @@ export const LoginSignup = () => {
                 const result = await res.json();
                 if (!res.ok) {
                     console.error("Error response:", result); // Log full response
+                    if (result.statusCode === 409) {
+                        setEmailPlaceholder('Email already in use');
+                        setEmail('');
+                    }
                     throw new Error(result.message || "Failed to fetch");
                 } else {
-                    console.log(result.message)
-                    console.log(result.data)
+                    setName('')
+                    setPassword('')
+                    setConfirmPassword('')
+                    setFormState('Log in')
                 }
-
-
-
             } catch (err) {
                 console.error("Error fetching data:", err);
             } finally {
-                setLoading(false);
+                setTimeout(() => {
+                    setLoading(false);
+                }, 2000)
             }
         }
 
 
         // IF LOGIN
+        if (formState === "Log in") {
+            try {
+                const res = await fetch(`${apiUrl}auth/login`, {
+                    method: "POST",
+                    headers: {
+                        "Content-Type": "application/json",
+                    },
+                    body: JSON.stringify({
+                        email: email,
+                        password: password,
+                    }),
+                });
+                const result = await res.json();
+                if (!res.ok) {
+                    console.error("Error response:", result); // Log full response
+                    if (result.statusCode === 401) {
+                        setPassword('')
+                        setPasswordPlaceholder("Incorrect password or email")
+                    }
+                    throw new Error(result.message || "Failed to fetch");
+                } else {
+                    setEmailPlaceholder("Email");
+                    setPasswordPlaceholder("Password");
+                    setName('');
+                    setEmail('');
+                    setPassword('');
+                    setConfirmPassword('');
+                    console.log(result.userData)
+                    localStorage.setItem('AuthToken', result.userData.authToken)
+                    // Save user Dtaa to redux
+                    const userData = {
+                        authToken: result.userData.authToken,
+                        name: result.userData.user.name,
+                        email: result.userData.user.email
+                    }
+                    console.log(userData)
+                    /// UPDATE REUX STORE
+                }
+
+
+            } catch (err) {
+                console.error("Error fetching data:", err);
+            } finally {
+                setTimeout(() => {
+                    setLoading(false);
+                }, 2000)
+            }
+        }
 
     }
 
@@ -158,7 +215,7 @@ export const LoginSignup = () => {
                             required />
 
                         <input
-                            placeholder="Email"
+                            placeholder={emailPlaceholder}
                             name="email"
                             type="email"
                             onChange={handleChangeStateValue}
@@ -166,7 +223,7 @@ export const LoginSignup = () => {
                             required />
 
                         <input
-                            placeholder="Password"
+                            placeholder={passwordPlaceholder}
                             name="password"
                             value={password}
                             onChange={handleChangeStateValue}
@@ -203,7 +260,3 @@ export const LoginSignup = () => {
 
     )
 }
-
-// height: formState === 'Signup' ? '' : '0px',
-// padding: formState === 'Signup' ? '' : '0px',
-// opacity: formState === 'Signup' ? '0.5' : '0',

@@ -4,7 +4,8 @@ import "./LoginSignup.css";
 // React
 import { useState, useEffect, useRef } from "react";
 // Redux 
-
+import { useDispatch } from "react-redux";
+import { setUser } from "../redux/slices/userSlice"; // Adjust path if needed
 // Components 
 import { LoadingScreen } from "./LoadingScreen";
 // Variables
@@ -16,6 +17,7 @@ const apiUrl = import.meta.env.VITE_API_URL;
 
 // COMPONENT
 export const LoginSignup = () => {
+    const dispatch = useDispatch();
     // Component States 
     const [formState, setFormState] = useState<'Signup' | 'Log in'>('Signup');
     const [loading, setLoading] = useState(false);
@@ -141,7 +143,6 @@ export const LoginSignup = () => {
                     setEmail('');
                     setPassword('');
                     setConfirmPassword('');
-                    console.log(result.userData)
                     localStorage.setItem('AuthToken', result.userData.authToken)
                     // Save user Dtaa to redux
                     const userData = {
@@ -149,8 +150,8 @@ export const LoginSignup = () => {
                         name: result.userData.user.name,
                         email: result.userData.user.email
                     }
-                    console.log(userData)
                     /// UPDATE REUX STORE
+                    dispatch(setUser(userData));
                 }
 
 

@@ -24,6 +24,8 @@
             font-size: clamp(16px, 1rem, 1.2rem);
             background-color: var(--element-fill);
             color: var(--primary-text);
+            outline: 0px solid var(--blue);
+            transition: 100ms;
         }
 
         input:focus {

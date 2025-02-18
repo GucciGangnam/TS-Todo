@@ -8,18 +8,19 @@ import { AppError } from "../utils/appError";
 // Create List
 export const createList = async (req: Request, res: Response, next: NextFunction) => {
     console.log("Creating list");
+    console.log(req.body);
     try {
         const userId = req.user;
         const listName = req.body.listName;
 
         if(!listName){ 
-            throw new AppError(404, "list name not provided", [
+            throw new AppError(400, "list name not provided", [
                 { field: "Input", message: "list name not provided" }
             ]);
         }
 
         const query1 = 'INSERT INTO lists (name, color, owner_id) VALUES ($1, $2, $3) RETURNING *';
-        const result1 = await pool.query(query1, [listName, 'default', userId])
+        const result1 = await pool.query(query1, [listName, 'element-fill', userId])
         const newList = result1.rows[0];
         // Respond
         res.status(201).json({
@@ -36,7 +37,7 @@ export const createList = async (req: Request, res: Response, next: NextFunction
 // Read List - Maybe not needed
 export const readList = async (req: Request, res: Response) => {
     console.log("Reading list")
-    res.send("Reading list")
+    res.json("Reading list")
 }
 
 // Update List - REQUIRES: listId

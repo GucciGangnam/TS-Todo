@@ -18,6 +18,7 @@ const listsSlice = createSlice({
         setLists: (state, action: PayloadAction<ListsState>) => {
             return action.payload;
         },
+
         clearLists: () => initialState,
     },
 });

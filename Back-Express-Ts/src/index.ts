@@ -14,9 +14,14 @@ import { errorHandler } from "./controllers/errorHanlderController";
 dotenv.config();
 export const app = express();
 
-
-
-app.use(cors());
+const allowedOrigin = process.env.FRONT_END_URL;
+app.use(
+    cors({
+        origin: allowedOrigin,
+        methods: ['GET', 'POST', 'PUT', 'DELETE'],
+        credentials: true, // Allow cookies/auth headers
+    })
+);
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 

@@ -1,0 +1,98 @@
+.Home {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    color: var(--primary-text);
+    gap: 1vh;
+    font-size: 1rem;
+
+    .Title {
+        /* outline: 1px dashed pink; */
+        padding: 1rem;
+        font-size: 3rem;
+
+    }
+
+    form {
+        /* outline: 1px dashed pink; */
+        padding: 1rem;
+
+        input {
+            padding: 1rem;
+            border: none;
+            border-radius: 25px;
+            font-size: clamp(16px, 1rem, 1.2rem);
+            background-color: var(--element-fill);
+            color: var(--primary-text);
+        }
+
+        input:focus {
+            outline: 2px solid var(--blue);
+        }
+    }
+
+    .ListsContainer {
+        /* outline: 1px dashed pink; */
+        padding: 1rem;
+        width: 100%;
+        box-sizing: border-box;
+        display: flex;
+        flex-wrap: wrap;
+        gap: 1rem;
+        justify-content: center;
+    }
+
+    .List {
+        /* outline: 1px solid pink; */
+        color: var(--background);
+        flex: 0 1 200px;
+        padding: 1rem;
+        border-radius: 5px;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: space-between;
+        width: 100%;
+        max-width: 200px;
+        height: 200px;
+        box-sizing: border-box;
+        opacity: 0;
+        transition: 300ms;
+        /* Start as invisible */
+        animation: fadeIn 0.5s forwards;
+
+        /* Apply delay directly from inline style */
+        animation-delay: var(--delay, 0s);
+
+        .List-Title {
+            font-size: 1.5rem;
+            margin-bottom: 1rem;
+        }
+
+        .List-Task-Count {
+            height: 100%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-size: 2rem;
+        }
+    }
+
+    .List:hover{ 
+        transform: scale(1.1);
+        color: var(--primary-text);
+        cursor: pointer;
+    }
+}
+
+/* AMINATION */
+/* Define the fade-in animation */
+@keyframes fadeIn {
+    0% {
+        opacity: 0;
+    }
+
+    100% {
+        opacity: 1;
+    }
+}

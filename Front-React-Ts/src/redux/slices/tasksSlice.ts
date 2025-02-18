@@ -27,5 +27,5 @@ const listsSlice = createSlice({
 });
 
 export const { setTasks, clearTasks } = listsSlice.actions;
-export const selectTasks = (state: { userData: TasksState }) => state.userData;
+export const selectTasks = (state: { tasksData: TasksState }) => state.tasksData;
 export default listsSlice.reducer;

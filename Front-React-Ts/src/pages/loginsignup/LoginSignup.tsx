@@ -5,9 +5,11 @@ import "./LoginSignup.css";
 import { useState, useEffect, useRef } from "react";
 // Redux 
 import { useDispatch } from "react-redux";
-import { setUser } from "../redux/slices/userSlice";
-import { setLists } from "../redux/slices/listsSlice";
-import { setTasks } from "../redux/slices/tasksSlice";
+import { setUser } from "../../redux/slices/userSlice";
+import { setLists } from "../../redux/slices/listsSlice";
+import { setTasks } from "../../redux/slices/tasksSlice";
+// RRD 
+import { useNavigate } from "react-router-dom";
 // Components 
 import { LoadingScreen } from "./LoadingScreen";
 // Variables
@@ -19,6 +21,7 @@ const apiUrl = import.meta.env.VITE_API_URL;
 
 // COMPONENT
 export const LoginSignup = () => {
+    const navigate = useNavigate();
     const dispatch = useDispatch();
     // Component States 
     const [formState, setFormState] = useState<'Signup' | 'Log in'>('Signup');
@@ -158,6 +161,7 @@ export const LoginSignup = () => {
                     dispatch(setUser(userData));
                     dispatch(setLists(listData));
                     dispatch(setTasks(taskData));
+                    navigate('/');
                 }
 
 

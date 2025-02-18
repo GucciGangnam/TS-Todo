@@ -1,28 +1,33 @@
 import './App.css';
+// Redux
 import { useSelector } from "react-redux";
-import { selectUser, clearUser } from "./redux/slices/userSlice";
-import { persistor } from "./redux/store.ts";
-import { useDispatch } from 'react-redux';
-
+import { selectUser, clearUser } from "./redux/slices/userSlice.ts";
+//RRD
 import { Navigate, Route, Routes } from 'react-router-dom'; // Import Navigate
+//Pages
+import { LoginSignup } from './pages/loginsignup/LoginSignup.tsx';
+import { Home } from './pages/home/home.tsx';
 
-import { LoginSignup } from './loginsignup/LoginSignup.tsx';
+// Protected Route Component
+interface ProtectedRouteProps {
+  children: React.ReactNode;
+}
+
+const ProtectedRoute: React.FC<ProtectedRouteProps> = ({ children }) => {
+  const user = useSelector(selectUser);
+  return user.authToken ? <>{children}</> : <Navigate to="/login" replace />;
+};
 
 function App() {
-  const dispatch = useDispatch();
-  const user = useSelector(selectUser);
-  console.log(user)
-
-  const handleLogout = () => {
-    dispatch(clearUser()); // Clear Redux state
-    persistor.purge(); // Clears persisted state in localStorage
-  };
-
   return (
     <div className='App'>
       <Routes>
         <Route path="/login" element={<LoginSignup />} />
-        {/* <Route path="/" element={<Home/>}/> */}
+        <Route path="/" element={
+          <ProtectedRoute>
+            <Home />
+          </ProtectedRoute>
+        } />
       </Routes>
     </div>
   );

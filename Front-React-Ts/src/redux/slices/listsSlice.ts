@@ -23,5 +23,5 @@ const listsSlice = createSlice({
 });
 
 export const { setLists, clearLists } = listsSlice.actions;
-export const selectLists = (state: { userData: ListsState }) => state.userData;
+export const selectLists = (state: { listsData: ListsState }) => state.listsData;
 export default listsSlice.reducer;

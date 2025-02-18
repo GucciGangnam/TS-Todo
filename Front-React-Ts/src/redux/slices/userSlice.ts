@@ -8,8 +8,8 @@ interface UserState {
 
 const initialState: UserState = {
     authToken: null,
-    name: "",
-    email: "",
+    name: '',
+    email: '',
 };
 
 const userSlice = createSlice({
@@ -24,4 +24,5 @@ const userSlice = createSlice({
 });
 
 export const { setUser, clearUser } = userSlice.actions;
+export const selectUser = (state: { userData: UserState }) => state.userData;
 export default userSlice.reducer;

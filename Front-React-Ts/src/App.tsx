@@ -1,22 +1,31 @@
-// IMPORTS
-// Styles
-import './App.css'
-// React
+import './App.css';
+import { useSelector } from "react-redux";
+import { selectUser, clearUser } from "./redux/slices/userSlice";
+import { persistor } from "./redux/store.ts";
+import { useDispatch } from 'react-redux';
 
-// Pages
-import { LoginSignup } from './loginsignup/LoginSignup.tsx'
+import { Navigate, Route, Routes } from 'react-router-dom'; // Import Navigate
 
-// TYPES 
+import { LoginSignup } from './loginsignup/LoginSignup.tsx';
 
-// COMPONENT
 function App() {
+  const dispatch = useDispatch();
+  const user = useSelector(selectUser);
+  console.log(user)
+
+  const handleLogout = () => {
+    dispatch(clearUser()); // Clear Redux state
+    persistor.purge(); // Clears persisted state in localStorage
+  };
 
   return (
     <div className='App'>
-      {/* Login Signup */}
-      <LoginSignup/>
+      <Routes>
+        <Route path="/login" element={<LoginSignup />} />
+        {/* <Route path="/" element={<Home/>}/> */}
+      </Routes>
     </div>
-  )
+  );
 }
 
-export default App
+export default App;

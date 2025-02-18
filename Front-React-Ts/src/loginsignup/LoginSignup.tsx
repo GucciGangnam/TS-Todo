@@ -5,7 +5,9 @@ import "./LoginSignup.css";
 import { useState, useEffect, useRef } from "react";
 // Redux 
 import { useDispatch } from "react-redux";
-import { setUser } from "../redux/slices/userSlice"; // Adjust path if needed
+import { setUser } from "../redux/slices/userSlice";
+import { setLists } from "../redux/slices/listsSlice";
+import { setTasks } from "../redux/slices/tasksSlice";
 // Components 
 import { LoadingScreen } from "./LoadingScreen";
 // Variables
@@ -97,7 +99,7 @@ export const LoginSignup = () => {
                     if (result.statusCode === 409) {
                         setEmailPlaceholder('Email already in use');
                         setEmail('');
-                    }
+                    } else 
                     throw new Error(result.message || "Failed to fetch");
                 } else {
                     setName('')
@@ -143,15 +145,19 @@ export const LoginSignup = () => {
                     setEmail('');
                     setPassword('');
                     setConfirmPassword('');
-                    localStorage.setItem('AuthToken', result.userData.authToken)
-                    // Save user Dtaa to redux
-                    const userData = {
+                    // Make user Data Object 
+                    console.log(result.userData)
+                    const userData = { 
                         authToken: result.userData.authToken,
                         name: result.userData.user.name,
                         email: result.userData.user.email
                     }
-                    /// UPDATE REUX STORE
+                    const listData = result.userData.lists;
+                    const taskData = result.userData.tasks;
+                    // Save user Dtaa to redux
                     dispatch(setUser(userData));
+                    dispatch(setLists(listData));
+                    dispatch(setTasks(taskData));
                 }
 
 

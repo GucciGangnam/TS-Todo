@@ -8,12 +8,13 @@ import { jwtDecode } from 'jwt-decode';
 // Redux
 import { useSelector } from "react-redux";
 import { selectUser, clearUser } from "../../redux/slices/userSlice";
-import { selectLists, setLists, clearLists } from "../../redux/slices/listsSlice";
+import { selectLists, addTempList, updateTempList, clearLists, removeTempList } from "../../redux/slices/listsSlice";
 import { selectTasks, clearTasks } from "../../redux/slices/tasksSlice";
 import { persistor } from "../../redux/store";
 import { useDispatch } from 'react-redux';
 // RRD 
 import { useNavigate } from "react-router-dom";
+import { set } from "mongoose";
 // Variables
 const apiUrl = import.meta.env.VITE_API_URL;
 
@@ -68,14 +69,18 @@ export const Home = () => {
         e.preventDefault();
         console.log('postong list', inputValue, 'authtoken', user.authToken);
         // First make optimistic update to the UI by adding the new list to the redux store // UNDER CONSTRUCTION 
-        const newList = { 
-            id: 999, 
-            name: 'placeholder', 
-            color: 'element-fill', 
-            task_count: 0 
+        // Generate random4 char string
+        const randomString = Math.random().toString(36).substring(2, 6);
+        const newList = {
+            id: randomString,
+            name: inputValue,
+            color: 'element-fill' as 'element-fill',
+            task_count: 0,
+            created_at: new Date().toISOString(),
+            owner_id: 'placeholder',
         }
-        // Add the new list to the redux store
-
+        // Add the temparary list to the redux store;
+        dispatch(addTempList(newList));
         try {
             const response = await fetch(`${apiUrl}lists`, {
                 method: 'POST',
@@ -87,7 +92,9 @@ export const Home = () => {
                     listName: inputValue,
                 }),
             });
+            setInputValue('');
             if (!response.ok) {
+                dispatch(removeTempList(randomString));
                 if (response.status === 403) {
                     handleLogout();
                     return;
@@ -95,11 +102,20 @@ export const Home = () => {
                 console.error("Error response:", response);
             }
             const data = await response.json();
-            console.log(data);
             // update the redux store with the new list
-
-
+            const trueList = {
+                listToUpdate: randomString,
+                id: data.data.id,
+                name: data.data.name,
+                color: data.data.color,
+                task_count: 0,
+                created_at: data.data.created_at,
+                owner_id: data.data.owner_id,
+            }
+            console.log(trueList);
+            dispatch(updateTempList(trueList));
         } catch (err) {
+            dispatch(removeTempList(randomString));
             console.error(err);
         }
     };
@@ -131,7 +147,7 @@ export const Home = () => {
                             '--delay': `${index * 0.05}s`, // Calculate delay based on index
                         } as React.CSSProperties} // Apply the delay inline using CSS custom properties
                     >
-                        <div className="List-Title">{list.name}</div>
+                        <div className="List-Title">{list.name.length > 15 ? `${list.name.slice(0, 15)}...` : list.name}</div>
                         <div className="List-Task-Count">{list.task_count}</div>
                     </div>
                 ))}

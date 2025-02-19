@@ -8,7 +8,8 @@ interface Task {
     description: string | null,
     important: boolean,
     list_id: string,
-    owner_id: string
+    owner_id: string,
+    due_date: string | null,
 }
 
 type TasksState = Task[];
@@ -22,10 +23,13 @@ const listsSlice = createSlice({
         setTasks: (state, action: PayloadAction<TasksState>) => {
             return action.payload;
         },
+        addTempTask: (state, action: PayloadAction<Task>) => {
+            state.push(action.payload);
+        },
         clearTasks: () => initialState,
     },
 });
 
-export const { setTasks, clearTasks } = listsSlice.actions;
+export const { setTasks, clearTasks, addTempTask } = listsSlice.actions;
 export const selectTasks = (state: { tasksData: TasksState }) => state.tasksData;
 export default listsSlice.reducer;

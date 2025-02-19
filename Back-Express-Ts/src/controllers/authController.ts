@@ -41,14 +41,17 @@ export const loginUser = async (req: Request, res: Response, next: NextFunction)
             const userData = await pool.query(userDataQuery, userDataValues);
             // user data is userData.rows[0] // // // // /// /// // /// // /// / /// / /  
             // Get lists object ;
-            const listsDataQuery = `SELECT l.id, 
-       COALESCE(l.name, '') AS name, 
-       COALESCE(l.color, '') AS color, 
-       COUNT(t.id) AS task_count
-FROM lists l
-LEFT JOIN tasks t ON l.id = t.list_id
-WHERE l.owner_id = $1
-GROUP BY l.id, l.name, l.color;`;
+            const listsDataQuery = `
+            SELECT l.id, 
+                   COALESCE(l.name, '') AS name, 
+                   COALESCE(l.color, '') AS color, 
+                   l.created_at,
+                   COUNT(t.id) AS task_count
+            FROM lists l
+            LEFT JOIN tasks t ON l.id = t.list_id
+            WHERE l.owner_id = $1
+            GROUP BY l.id, l.name, l.color, l.created_at;
+        `;
             const listsDataValue = [user.id];
             const listsData = await pool.query(listsDataQuery, listsDataValue);
             // Get tasks object ;

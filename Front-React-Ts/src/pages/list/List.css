@@ -1,3 +1,116 @@
-.List{ 
-    
+.List {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    color: var(--primary-text);
+    gap: 1vh;
+    font-size: 1rem;
+
+    .Title {
+        outline: 1px dashed pink;
+        padding: 1rem;
+        font-size: 3rem;
+        background-color: var(--background);
+        border: none;
+        color: var(--primary-text);
+        text-align: center;
+    }
+    .Title:focus {
+        text-decoration: underline;
+    }
+
+    .Color-Selector-Container{ 
+        padding: 1rem;
+        width: 50%;
+        box-sizing: border-box;
+        outline: 1px dashed pink;
+        display: flex;
+        justify-content: space-evenly;
+
+
+        button{ 
+            padding: 1rem;
+            border: none;
+            border-radius: 25px;
+            color: var(--primary-text);
+            cursor: pointer;
+            transition: 300ms;
+            opacity: 0.5;
+        }
+
+    button:hover{ 
+        transform: scale(1.3);
+        opacity: 1;
+    }
+    }
+
+    form {
+        /* outline: 1px dashed pink; */
+        padding: 1rem;
+
+        input {
+            padding: 1rem;
+            border: none;
+            border-radius: 25px;
+            font-size: clamp(16px, 1rem, 1.2rem);
+            background-color: var(--element-fill);
+            color: var(--primary-text);
+            outline: 0px solid var(--blue);
+            transition: 100ms;
+        }
+
+        input:focus {
+            outline: 2px solid var(--blue);
+        }
+    }
+
+
+    .Filter-Container {
+        /* outline: 1px dashed pink; */
+        width: 95%;
+        box-sizing: border-box;
+        display: flex;
+        gap: 3vw;
+        color: var(--primary-text);
+
+        .Filter-Toggle {
+            /* outline: 1px dashed pink; */
+            width: 35px;
+            height: 35px;
+            border-radius: 100%;
+            border: none;
+            background-color: var(--element-fill);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            aspect-ratio: 1/1;
+            cursor: pointer;
+            color: var(--primary-text);
+            transition: 300ms;
+        }
+
+        .Filter-Buttons-Container {
+            transition: 300ms;
+            /* outline: 1px dashed pink; */
+            width: 100%;
+            overflow: hidden;
+            display: flex;
+            justify-content: space-evenly;
+            align-items: center;
+            gap: 10%;
+
+            button {
+                /* outline: 1px dashed pink; */
+                width: 100%;
+                padding: 0.5rem;
+                border: none;
+                border-radius: 25px;
+                background-color: var(--element-fill);
+                cursor: pointer;
+                color: var(--secondary-text);
+            }
+        }
+    }
+
+
 }

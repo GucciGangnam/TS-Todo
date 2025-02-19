@@ -49,7 +49,7 @@ export const updateList = async (req: Request, res: Response, next: NextFunction
         console.log(listId, newColor)
         // Ensure listId and newColor are provided
         if (!listId || !newColor) {
-            throw new AppError(403, "List ID and color are required", [
+            throw new AppError(403, "List ID or color are required", [
                 { field: "Inputs", message: "List ID and color are required" }
             ]);
         }

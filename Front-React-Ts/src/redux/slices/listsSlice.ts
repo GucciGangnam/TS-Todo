@@ -3,7 +3,7 @@ import { createSlice, PayloadAction } from "@reduxjs/toolkit";
 interface List {
     id: string;
     name: string;
-    color: 'element-fill' | 'red' | 'orange' | 'yellow' | 'green' | 'purple';
+    color: 'element-fill' | 'red' | 'orange' | 'yellow' | 'green' | 'purple' | 'blue';
     created_at: string;
     owner_id: string;
     task_count: number;
@@ -13,7 +13,7 @@ interface trueList {
     listToUpdate: string;
     id: string;
     name: string;
-    color: 'element-fill' | 'red' | 'orange' | 'yellow' | 'green' | 'purple';
+    color: 'element-fill' | 'red' | 'orange' | 'yellow' | 'green' | 'purple' | 'blue';
     created_at: string;
     owner_id: string;
     task_count: number;
@@ -47,12 +47,16 @@ const listsSlice = createSlice({
         },
         removeTempList: (state, action: PayloadAction<string>) => {
             return state.filter(list => list.id !== action.payload);
-            //action.payload is the id of the list to remove
+            //action.payload is the id of the list to remove and they payload will be formatted like this: 'listId'
+        },
+        updateListColor: (state, action: PayloadAction<{ listId: string, newColor: 'element-fill' | 'red' | 'orange' | 'yellow' | 'green' | 'purple' | 'blue' }>) => {
+            const index = state.findIndex(list => list.id === action.payload.listId);
+            state[index].color = action.payload.newColor;
         },
         clearLists: () => initialState,
     },
 });
 
-export const { setLists, addTempList, clearLists, updateTempList, removeTempList } = listsSlice.actions;
+export const { setLists, addTempList, clearLists, updateTempList, removeTempList, updateListColor } = listsSlice.actions;
 export const selectLists = (state: { listsData: ListsState }) => state.listsData;
 export default listsSlice.reducer;

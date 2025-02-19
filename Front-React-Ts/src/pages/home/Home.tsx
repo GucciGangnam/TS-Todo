@@ -26,6 +26,8 @@ interface DecodedToken {
     [key: string]: any; // Optional: For other decoded fields
 }
 
+type SortOptions = 'newest' | 'oldest' | 'az' | 'za' | 'tasks';
+
 
 
 
@@ -58,14 +60,36 @@ export const Home = () => {
         persistor.purge();
     };
 
+    const allLists = useSelector(selectLists);
+
     // FILTERS //
     const [showFilters, setShowFilters] = useState(false);
+    const [sortOption, setSortOption] = useState<SortOptions>('newest');
     const handleToggleFilters = () => {
         setShowFilters(!showFilters);
-    };   
+    };
+    const sortedLists = [...allLists].sort((a, b) => {
+        if (sortOption === 'newest') {
+            return new Date(b.created_at).getTime() - new Date(a.created_at).getTime();
+        }
+        if (sortOption === 'oldest') {
+            return new Date(a.created_at).getTime() - new Date(b.created_at).getTime();
+        }
+        if (sortOption === 'az') {
+            return a.name.localeCompare(b.name);
+        }
+        if (sortOption === 'za') {
+            return b.name.localeCompare(a.name);
+        }
+        if (sortOption === 'tasks') {
+            return b.task_count - a.task_count;
+        }
+        return 0;
+    });
 
 
-    const allLists = useSelector(selectLists);
+
+
     // FORM //
     // States
     const [inputValue, setInputValue] = useState('');
@@ -184,24 +208,24 @@ export const Home = () => {
                             fill="var(--primary-text)" />
                     </svg>
                 </button>
-                <div 
-                className="Filter-Buttons-Container"
-                style={{
-                    width: showFilters ? '100%' : '0px',
-                    opacity: showFilters ? '1' : '0',
-                }}
+                <div
+                    className="Filter-Buttons-Container"
+                    style={{
+                        width: showFilters ? '100%' : '0px',
+                        opacity: showFilters ? '1' : '0',
+                    }}
                 >
-                    <button>Oldest↓</button>
-                    <button>Newest↓</button>
-                    <button>AZ↓</button>
-                    <button>ZA↓</button>
-                    <button>Tasks↓</button>
+                    <button onClick={() => { setSortOption('oldest')}}>Oldest↓</button>
+                    <button onClick={() => { setSortOption('newest')}}>Newest↓</button>
+                    <button onClick={() => { setSortOption('az')}}>AZ↓</button>
+                    <button onClick={() => { setSortOption('za')}}>ZA↓</button>
+                    <button onClick={() => { setSortOption('tasks')}}>Tasks↓</button>
                 </div>
             </div>
 
             {/* List Container */}
             <div className="ListsContainer">
-                {allLists.map((list, index) => (
+                {sortedLists.map((list, index) => (
                     <div
                         onClick={() => { navigate(`/list/${list.id}`) }}
                         key={list.id}

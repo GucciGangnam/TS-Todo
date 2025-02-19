@@ -6,7 +6,9 @@ import { selectUser, clearUser } from "./redux/slices/userSlice.ts";
 import { Navigate, Route, Routes } from 'react-router-dom'; // Import Navigate
 //Pages
 import { LoginSignup } from './pages/loginsignup/LoginSignup.tsx';
-import { Home } from './pages/home/home.tsx';
+import { Home } from './pages/home/Home.tsx';
+import { List } from './pages/list/List.tsx';
+
 
 // Protected Route Component
 interface ProtectedRouteProps {
@@ -21,11 +23,17 @@ const ProtectedRoute: React.FC<ProtectedRouteProps> = ({ children }) => {
 function App() {
   return (
     <div className='App'>
+
       <Routes>
         <Route path="/login" element={<LoginSignup />} />
         <Route path="/" element={
           <ProtectedRoute>
             <Home />
+          </ProtectedRoute>
+        } />
+        <Route path="/list/:id" element={
+          <ProtectedRoute>
+            <List />
           </ProtectedRoute>
         } />
       </Routes>

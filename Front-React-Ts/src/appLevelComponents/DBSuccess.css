@@ -1,0 +1,37 @@
+.DBSuccess{ 
+    background-color: var(--green);
+    border-radius: 50%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    position: fixed;
+    right: 10px;
+    top: 10px;
+    padding: 10px;
+    opacity: 0;
+    transform: scale(0);
+    animation: fadeInDBSuccess 1.5s forwards;
+    svg{ 
+        max-width: fit-content;
+    }
+}
+
+/* Animation */
+@keyframes fadeInDBSuccess {
+    0% {
+        opacity: 0;
+        transform: scale(0);
+    }
+    30% {
+        opacity: 1;
+        transform: scale(1);
+    }
+    70% {
+        opacity: 1;
+        transform: scale(1);
+    }
+    100% {
+        opacity: 0;
+        transform: scale(0);
+    }
+}

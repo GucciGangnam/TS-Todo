@@ -14,9 +14,11 @@ import { persistor } from "../../redux/store";
 import { useDispatch } from 'react-redux';
 // RRD 
 import { useNavigate } from "react-router-dom";
-import { set } from "mongoose";
+// COMPOENNETS 
+import { DBSuccess } from "../../appLevelComponents/DBSuccess";
 // Variables
 const apiUrl = import.meta.env.VITE_API_URL;
+
 
 // TYPES 
 interface DecodedToken {
@@ -24,7 +26,7 @@ interface DecodedToken {
     [key: string]: any; // Optional: For other decoded fields
 }
 
-// COMPOENNETS 
+
 
 
 // COMPOENENT
@@ -48,6 +50,7 @@ export const Home = () => {
         }
     }, [])
 
+    // Log out handler //
     const handleLogout = () => {
         dispatch(clearUser());
         dispatch(clearLists());
@@ -55,9 +58,15 @@ export const Home = () => {
         persistor.purge();
     };
 
-    const allLists = useSelector(selectLists);
+    // FILTERS //
+    const [showFilters, setShowFilters] = useState(false);
+    const handleToggleFilters = () => {
+        setShowFilters(!showFilters);
+    };   
 
-    // Form handler 
+
+    const allLists = useSelector(selectLists);
+    // FORM //
     // States
     const [inputValue, setInputValue] = useState('');
     // Change Handler
@@ -65,6 +74,8 @@ export const Home = () => {
         setInputValue(e.target.value);
     };
     // Submit Handler
+    const [dataSaved, setDataSaved] = useState(false);
+    const [dataFail, setDatFail] = useState(false);
     const handleSubmitForm = async (e: React.FormEvent<HTMLFormElement>) => {
         e.preventDefault();
         console.log('postong list', inputValue, 'authtoken', user.authToken);
@@ -94,6 +105,12 @@ export const Home = () => {
             });
             setInputValue('');
             if (!response.ok) {
+                setDatFail(true);
+                console.log("fail animate start")
+                setTimeout(() => {
+                    setDatFail(false);
+                    console.log("fail animate fin")
+                }, 2000);
                 dispatch(removeTempList(randomString));
                 if (response.status === 403) {
                     handleLogout();
@@ -101,6 +118,10 @@ export const Home = () => {
                 }
                 console.error("Error response:", response);
             }
+            setDataSaved(true);
+            setTimeout(() => {
+                setDataSaved(false);
+            }, 2000);
             const data = await response.json();
             // update the redux store with the new list
             const trueList = {
@@ -115,6 +136,12 @@ export const Home = () => {
             console.log(trueList);
             dispatch(updateTempList(trueList));
         } catch (err) {
+            setDatFail(true);
+            console.log("fail animate start")
+            setTimeout(() => {
+                setDatFail(false);
+                console.log("fail animate fin")
+            }, 2000);
             dispatch(removeTempList(randomString));
             console.error(err);
         }
@@ -123,10 +150,12 @@ export const Home = () => {
 
     return (
         <div className="Home">
-
-
+            {/* Animation */}
+            {dataSaved && <DBSuccess success={true} />}
+            {dataFail && <DBSuccess success={false} />}
+            {/* Title */}
             <div className="Title">All Lists</div>
-
+            {/* Input */}
             <form onSubmit={handleSubmitForm}>
                 <input
                     value={inputValue}
@@ -134,12 +163,47 @@ export const Home = () => {
                     placeholder="Create New List"
                 />
             </form>
-            {/* Lists container */}
-            <div className="ListsContainer">
+            {/* Filter */}
+            <div className="Filter-Container">
+                <button
+                    onClick={handleToggleFilters}
+                    className="Filter-Toggle"
+                    style={{
+                        transform: showFilters ? 'rotate(-90deg)' : 'rotate(0deg)',
+                    }}>
+                    <svg
+                        width="30px"
+                        height="30px"
+                        viewBox="0 0 24 24"
+                        fill="none"
+                        xmlns="http://www.w3.org/2000/svg">
+                        <path
+                            fillRule="evenodd"
+                            clipRule="evenodd"
+                            d="M3 7C3 6.44772 3.44772 6 4 6H20C20.5523 6 21 6.44772 21 7C21 7.55228 20.5523 8 20 8H4C3.44772 8 3 7.55228 3 7ZM6 12C6 11.4477 6.44772 11 7 11H17C17.5523 11 18 11.4477 18 12C18 12.5523 17.5523 13 17 13H7C6.44772 13 6 12.5523 6 12ZM9 17C9 16.4477 9.44772 16 10 16H14C14.5523 16 15 16.4477 15 17C15 17.5523 14.5523 18 14 18H10C9.44772 18 9 17.5523 9 17Z"
+                            fill="var(--primary-text)" />
+                    </svg>
+                </button>
+                <div 
+                className="Filter-Buttons-Container"
+                style={{
+                    width: showFilters ? '100%' : '0px',
+                    opacity: showFilters ? '1' : '0',
+                }}
+                >
+                    <button>Oldest↓</button>
+                    <button>Newest↓</button>
+                    <button>AZ↓</button>
+                    <button>ZA↓</button>
+                    <button>Tasks↓</button>
+                </div>
+            </div>
 
+            {/* List Container */}
+            <div className="ListsContainer">
                 {allLists.map((list, index) => (
                     <div
-                        onClick={() => { navigate('/list') }}
+                        onClick={() => { navigate(`/list/${list.id}`) }}
                         key={list.id}
                         className="List"
                         style={{
@@ -151,12 +215,9 @@ export const Home = () => {
                         <div className="List-Task-Count">{list.task_count}</div>
                     </div>
                 ))}
-
             </div>
-            {/* End */}
+            {/* Logout button */}
             <button onClick={handleLogout}>Log out</button>
-
-
         </div>
     )
 };

@@ -6,11 +6,14 @@ import React, { useState, useEffect } from "react";
 // Redux
 import { useSelector, useDispatch } from "react-redux";
 import { selectUser } from "../../redux/slices/userSlice";
+import { selectTasks, addTempTask, removeTempTask } from "../../redux/slices/tasksSlice";
 import { selectLists, addTempList, updateTempList, removeTempList, updateListColor, updateListName } from "../../redux/slices/listsSlice";
+
 // RRD
 import { useNavigate, useParams } from "react-router-dom";
 
-// Components
+// COMPOENNETS 
+import { DBSuccess } from "../../appLevelComponents/DBSuccess";
 
 // Variables
 const apiUrl = import.meta.env.VITE_API_URL;
@@ -18,9 +21,15 @@ const apiUrl = import.meta.env.VITE_API_URL;
 //COMPONENT//
 
 export const List = () => {
+    //Params
     const { id } = useParams();
+    // Lists
     const allLists = useSelector(selectLists);
     const currentList = allLists.find(list => list.id === id);
+    // Tasks
+    const allTasks = useSelector(selectTasks);
+    const currentTasks = allTasks.filter(task => task.list_id === id);
+    // User
     const user = useSelector(selectUser);
     const navigate = useNavigate();
     const dispatch = useDispatch();
@@ -30,6 +39,10 @@ export const List = () => {
     const handleChangeListName = (e: React.ChangeEvent<HTMLInputElement>) => {
         setListName(e.target.value);
     };
+    // DB success states
+    const [dataSaved, setDataSaved] = useState(false);
+    const [dataFail, setDataFail] = useState(false);
+
     // Save task name //
     useEffect(() => {
         const handleClickOutside = async (event: MouseEvent) => {
@@ -41,6 +54,7 @@ export const List = () => {
                         dispatch(updateListName({ listId: id, newName: listName }));
                     } else {
                         console.error("List ID is undefined");
+                        return;
                     }
                     try {
                         console.log("updating the task name in db")
@@ -56,16 +70,29 @@ export const List = () => {
                             }),
                         });
                         if (!response.ok) {
-                            // dispatch old name to redux
+                            setDataFail(true);
+                            setTimeout(() => {
+                                setDataFail(false);
+                                console.log("fail animate fin")
+                            }, 2000);
                             if (id) {
                                 dispatch(updateListName({ listId: id, newName: currentList?.name || 'Error' }));
                             }
                             console.error("Error response:", response);
                         }
+                        setDataSaved(true);
+                        setTimeout(() => {
+                            setDataSaved(false);
+                        }, 2000);
                         const data = await response.json();
                         console.log(data);
-                        // update the redux store with the new list
+                        // update the redux store with the new task
                     } catch (err) {
+                        setDataFail(true);
+                        setTimeout(() => {
+                            setDataFail(false);
+                            console.log("fail animate fin")
+                        }, 2000);
                         // dispatch old name to redux
                         if (id) {
                             dispatch(updateListName({ listId: id, newName: currentList?.name || 'Error' }));
@@ -106,6 +133,10 @@ export const List = () => {
                 }),
             });
             if (!response.ok) {
+                setDataFail(true);
+                setTimeout(() => {
+                    setDataFail(false);
+                }, 2000);
                 // dispatch old color to redux
                 if (id) {
                     if (prevListColor) {
@@ -114,10 +145,18 @@ export const List = () => {
                 }
                 console.error("Error response:", response);
             }
+            setDataSaved(true);
+            setTimeout(() => {
+                setDataSaved(false);
+            }, 2000);
             const data = await response.json();
             console.log(data);
             // update the redux store with the new list
         } catch (err) {
+            setDataFail(true);
+            setTimeout(() => {
+                setDataFail(false);
+            }, 2000);
             // dispatch old color to redux
             if (id) {
                 if (prevListColor) {
@@ -139,8 +178,26 @@ export const List = () => {
         if (!inputValue) {
             return;
         }
+        const randomString = Math.random().toString(36).substring(2, 6);
         try {
             // Update redux with temp task
+            if (id) {
+                const newTask = {
+                    id: randomString,
+                    name: inputValue,
+                    completed: false,
+                    created_at: new Date().toISOString(),
+                    description: 'placeholder',
+                    important: false,
+                    list_id: id,
+                    owner_id: 'placeholder',
+                    due_date: null,
+                };
+                dispatch(addTempTask(newTask));
+            } else {
+                console.error("List ID is undefined");
+                return;
+            }
             const response = await fetch(`${apiUrl}tasks`, {
                 method: 'POST',
                 headers: {
@@ -154,15 +211,29 @@ export const List = () => {
             });
             setInputValue('');
             if (!response.ok) {
-                // Remove temp list from redux
+                setDataFail(true);
+                setTimeout(() => {
+                    setDataFail(false);
+                }, 2000);
+                // Remove temp task from redux
+                dispatch(removeTempTask(randomString));
                 console.error("Error response:", response);
             }
+            setDataSaved(true);
+            setTimeout(() => {
+                setDataSaved(false);
+            }, 2000);
             const data = await response.json();
             console.log(data);
             // update the redux store with the new list
 
         } catch (err) {
+            setDataFail(true);
+            setTimeout(() => {
+                setDataFail(false);
+            }, 2000);
             // Remove temp list from redux
+            dispatch(removeTempTask(randomString));
             console.error(err);
         }
     };
@@ -175,6 +246,9 @@ export const List = () => {
 
     return (
         <div className="List">
+            {/* Animation */}
+            {dataSaved && <DBSuccess success={true} />}
+            {dataFail && <DBSuccess success={false} />}
             {/* TITLE */}
             <input className="Title"
                 style={{ color: `var(--${currentList?.color})` }}
@@ -242,6 +316,7 @@ export const List = () => {
                     className="Filter-Toggle"
                     style={{
                         transform: filterOpen ? 'rotate(-90deg)' : 'rotate(0deg)',
+                        backgroundColor: `var(--${currentList?.color})`,
                     }}
                 >
                     <svg
@@ -254,7 +329,7 @@ export const List = () => {
                             fillRule="evenodd"
                             clipRule="evenodd"
                             d="M3 7C3 6.44772 3.44772 6 4 6H20C20.5523 6 21 6.44772 21 7C21 7.55228 20.5523 8 20 8H4C3.44772 8 3 7.55228 3 7ZM6 12C6 11.4477 6.44772 11 7 11H17C17.5523 11 18 11.4477 18 12C18 12.5523 17.5523 13 17 13H7C6.44772 13 6 12.5523 6 12ZM9 17C9 16.4477 9.44772 16 10 16H14C14.5523 16 15 16.4477 15 17C15 17.5523 14.5523 18 14 18H10C9.44772 18 9 17.5523 9 17Z"
-                            fill="var(--primary-text)" />
+                            fill="var(--background)" />
                     </svg>
                 </button>
                 <div
@@ -273,6 +348,23 @@ export const List = () => {
             </div>
 
             {/*  TASK CONTAINER */}
+            <div className="Task-Container">
+
+
+                {currentTasks.map(task => (
+                    <div key={task.id} className="Task"
+                        style={{
+                            backgroundColor: `var(--${currentList?.color}-fill)`,
+                        }}
+                    >
+                        <div className="Task-Name">{task.name}</div>
+                        <div className="Task-Due-Date">Due: {task.due_date}</div>
+                        <div className="Task-Description">Description: {task.description}</div>
+                    </div>
+                ))}
+
+
+            </div>
 
 
         </div>

@@ -9,6 +9,13 @@
   --green: #A9D18E;
   --blue: rgb(79, 120, 195);
   --purple: #E1A0D4;
+  --element-fill-fill: hsl(0, 0%, 50%, 0.3);
+  --red-fill: hsla(2, 72%, 65%, 0.3);
+  --orange-fill: hsl(24, 84%, 74%, 0.3);
+  --yellow-fill: hsla(45, 100%, 70%, 0.3);
+  --green-fill: hsl(96, 42%, 69%, 0.3);
+  --blue-fill: rgb(79, 120, 195, 0.3);
+  --purple-fill: hsl(312, 52%, 75%, 0.3);
 
 }
 
@@ -23,6 +30,13 @@
   --green: #A9D18E;
   --blue: rgb(79, 120, 195);
   --purple: #E1A0D4;
+  --element-fill-fill: hsl(0, 0%, 50%, 0.3);
+  --red-fill: hsla(2, 72%, 65%, 0.3);
+  --orange-fill: hsl(24, 84%, 74%, 0.3);
+  --yellow-fill: hsla(45, 100%, 70%, 0.3);
+  --green-fill: hsl(96, 42%, 69%, 0.3);
+  --blue-fill: rgb(79, 120, 195, 0.3);
+  --purple-fill: hsl(312, 52%, 75%, 0.3);
 }
 
 .App{ 

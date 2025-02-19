@@ -99,7 +99,7 @@ export const Home = () => {
     };
     // Submit Handler
     const [dataSaved, setDataSaved] = useState(false);
-    const [dataFail, setDatFail] = useState(false);
+    const [dataFail, setDataFail] = useState(false);
     const handleSubmitForm = async (e: React.FormEvent<HTMLFormElement>) => {
         e.preventDefault();
         console.log('postong list', inputValue, 'authtoken', user.authToken);
@@ -129,11 +129,9 @@ export const Home = () => {
             });
             setInputValue('');
             if (!response.ok) {
-                setDatFail(true);
-                console.log("fail animate start")
+                setDataFail(true);
                 setTimeout(() => {
-                    setDatFail(false);
-                    console.log("fail animate fin")
+                    setDataFail(false);
                 }, 2000);
                 dispatch(removeTempList(randomString));
                 if (response.status === 403) {
@@ -160,10 +158,9 @@ export const Home = () => {
             console.log(trueList);
             dispatch(updateTempList(trueList));
         } catch (err) {
-            setDatFail(true);
-            console.log("fail animate start")
+            setDataFail(true);
             setTimeout(() => {
-                setDatFail(false);
+                setDataFail(false);
                 console.log("fail animate fin")
             }, 2000);
             dispatch(removeTempList(randomString));

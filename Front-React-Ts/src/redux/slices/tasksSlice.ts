@@ -26,10 +26,13 @@ const listsSlice = createSlice({
         addTempTask: (state, action: PayloadAction<Task>) => {
             state.push(action.payload);
         },
+        removeTempTask: (state, action: PayloadAction<string>) => {
+            return state.filter(task => task.id !== action.payload);
+        },
         clearTasks: () => initialState,
     },
 });
 
-export const { setTasks, clearTasks, addTempTask } = listsSlice.actions;
+export const { setTasks, clearTasks, addTempTask, removeTempTask } = listsSlice.actions;
 export const selectTasks = (state: { tasksData: TasksState }) => state.tasksData;
 export default listsSlice.reducer;

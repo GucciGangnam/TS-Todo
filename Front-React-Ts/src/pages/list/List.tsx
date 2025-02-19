@@ -6,7 +6,7 @@ import React, { useState, useEffect } from "react";
 // Redux
 import { useSelector, useDispatch } from "react-redux";
 import { selectUser } from "../../redux/slices/userSlice";
-import { selectLists, addTempList, updateTempList, removeTempList, updateListColor } from "../../redux/slices/listsSlice";
+import { selectLists, addTempList, updateTempList, removeTempList, updateListColor, updateListName } from "../../redux/slices/listsSlice";
 // RRD
 import { useNavigate, useParams } from "react-router-dom";
 
@@ -26,10 +26,63 @@ export const List = () => {
     const dispatch = useDispatch();
 
     // TASK NAME //
-    const [taskName, setTaskName] = useState<string>('');
-    const handleChangeTaskName = (e: React.ChangeEvent<HTMLInputElement>) => {
-        setTaskName(e.target.value);
+    const [listName, setListName] = useState<string>(currentList?.name || 'Error');
+    const handleChangeListName = (e: React.ChangeEvent<HTMLInputElement>) => {
+        setListName(e.target.value);
     };
+    // Save task name //
+    useEffect(() => {
+        const handleClickOutside = async (event: MouseEvent) => {
+            const inputElement = document.querySelector('.Title');
+            if (inputElement && !inputElement.contains(event.target as Node)) {
+                if (listName !== currentList?.name) {
+                    // update the list in the redux store
+                    if (id) {
+                        dispatch(updateListName({ listId: id, newName: listName }));
+                    } else {
+                        console.error("List ID is undefined");
+                    }
+                    try {
+                        console.log("updating the task name in db")
+                        const response = await fetch(`${apiUrl}lists`, {
+                            method: 'PUT',
+                            headers: {
+                                'Content-Type': 'application/json',
+                                Authorization: `Bearer ${user.authToken}`,
+                            },
+                            body: JSON.stringify({
+                                listId: id,
+                                newName: listName,
+                            }),
+                        });
+                        if (!response.ok) {
+                            // dispatch old name to redux
+                            if (id) {
+                                dispatch(updateListName({ listId: id, newName: currentList?.name || 'Error' }));
+                            }
+                            console.error("Error response:", response);
+                        }
+                        const data = await response.json();
+                        console.log(data);
+                        // update the redux store with the new list
+                    } catch (err) {
+                        // dispatch old name to redux
+                        if (id) {
+                            dispatch(updateListName({ listId: id, newName: currentList?.name || 'Error' }));
+                        }
+                        console.error(err);
+                    }
+                }
+            }
+        };
+
+        document.addEventListener('click', handleClickOutside);
+        return () => {
+            document.removeEventListener('click', handleClickOutside);
+        };
+    }, [listName, currentList, id, user.authToken]);
+
+
     // Task Color //
     const changeTaskColor = async (color: 'element-fill' | 'red' | 'orange' | 'yellow' | 'green' | 'purple' | 'blue') => {
         const prevListColor = currentList?.color;
@@ -125,7 +178,8 @@ export const List = () => {
             {/* TITLE */}
             <input className="Title"
                 style={{ color: `var(--${currentList?.color})` }}
-                value={currentList?.name}
+                value={listName}
+                onChange={handleChangeListName}
             />
             {/* Color slector */}
             <div className="Color-Selector-Container">

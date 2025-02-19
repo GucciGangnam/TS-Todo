@@ -53,10 +53,14 @@ const listsSlice = createSlice({
             const index = state.findIndex(list => list.id === action.payload.listId);
             state[index].color = action.payload.newColor;
         },
+        updateListName: (state, action: PayloadAction<{ listId: string, newName: string }>) => {
+            const index = state.findIndex(list => list.id === action.payload.listId);
+            state[index].name = action.payload.newName;
+        },
         clearLists: () => initialState,
     },
 });
 
-export const { setLists, addTempList, clearLists, updateTempList, removeTempList, updateListColor } = listsSlice.actions;
+export const { setLists, addTempList, clearLists, updateTempList, removeTempList, updateListColor, updateListName } = listsSlice.actions;
 export const selectLists = (state: { listsData: ListsState }) => state.listsData;
 export default listsSlice.reducer;

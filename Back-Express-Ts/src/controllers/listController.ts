@@ -43,13 +43,12 @@ export const readList = async (req: Request, res: Response) => {
 // Update List - REQUIRES: listId
 export const updateList = async (req: Request, res: Response, next: NextFunction) => {
     try {
-        console.log("starting UpdateList", req.body.listId, req.body.newColor)
         const userId = req.user;
-        const { listId, newColor } = req.body;
-        console.log(listId, newColor)
+        const { listId, newColor, newName } = req.body;
+        console.log(listId, newColor, newName)
         // Ensure listId and newColor are provided
-        if (!listId || !newColor) {
-            throw new AppError(403, "List ID or color are required", [
+        if (!listId) {
+            throw new AppError(403, "List ID required", [
                 { field: "Inputs", message: "List ID and color are required" }
             ]);
         }
@@ -65,16 +64,19 @@ export const updateList = async (req: Request, res: Response, next: NextFunction
                 { field: "authentication", message: "NO permissions to edit this account" }
             ]);
         }
-        // Update color
-        const result = await pool.query(
-            "UPDATE lists SET color = $1 WHERE id = $2 RETURNING *",
-            [newColor, listId]
-        );
+        // Update the newColor and newName if provided
+        if (newColor) {
+            await pool.query("UPDATE lists SET color = $1 WHERE id = $2", [newColor, listId]);
+        }
+        if (newName) {
+            await pool.query("UPDATE lists SET name = $1 WHERE id = $2", [newName, listId]);
+        }
+        // Respond
         res.status(200).json({
-            status: 200,
+            success: true,
             message: "List updated successfully",
-            data: result.rows[0],
         });
+
     } catch (err) {
         next(err);
     }

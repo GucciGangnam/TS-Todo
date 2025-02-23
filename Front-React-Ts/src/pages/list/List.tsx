@@ -14,6 +14,7 @@ import { useNavigate, useParams } from "react-router-dom";
 
 // COMPOENNETS 
 import { DBSuccess } from "../../appLevelComponents/DBSuccess";
+import { Task } from "./task";
 
 // Variables
 const apiUrl = import.meta.env.VITE_API_URL;
@@ -377,12 +378,7 @@ export const List = () => {
 
 
                 {sortedTasks.map(task => (
-                    <div className="Task-Closed" key={task.id}>
-                        <div className="Task-Name">{task.name}</div>
-                        <div className="Task-Due-Date">{task.due_date}</div>
-                        <div className="Task-Description">{task.description}</div>
-
-                    </div>
+                    <Task task={task} color={currentList?.color} key={task.id} />
                 ))}
 
 

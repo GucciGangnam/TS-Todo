@@ -6,7 +6,7 @@ import React, { useState, useEffect } from "react";
 // Redux
 import { useSelector, useDispatch } from "react-redux";
 import { selectUser } from "../../redux/slices/userSlice";
-import { selectTasks, addTempTask, removeTempTask } from "../../redux/slices/tasksSlice";
+import { selectTasks, addTempTask, removeTempTask, updateTempTask } from "../../redux/slices/tasksSlice";
 import { selectLists, addTempList, updateTempList, removeTempList, updateListColor, updateListName } from "../../redux/slices/listsSlice";
 
 // RRD
@@ -17,6 +17,9 @@ import { DBSuccess } from "../../appLevelComponents/DBSuccess";
 
 // Variables
 const apiUrl = import.meta.env.VITE_API_URL;
+
+// TYPES
+type SortOptions = 'newest' | 'due' | 'important' | 'completed';
 
 //COMPONENT//
 
@@ -224,8 +227,11 @@ export const List = () => {
                 setDataSaved(false);
             }, 2000);
             const data = await response.json();
-            console.log(data);
+            console.log(data.data);
+            const trueTask = data.data;
             // update the redux store with the new list
+            dispatch(updateTempTask({ tempTaskId: randomString, trueTask }));
+
 
         } catch (err) {
             setDataFail(true);
@@ -243,6 +249,25 @@ export const List = () => {
     const handleToggleFilters = () => {
         setFilterOpen(!filterOpen);
     };
+    const [sortOption, setSortOption] = useState<SortOptions>('newest');
+    const sortedTasks = currentTasks.sort((a, b) => {
+        if (sortOption === 'newest') {
+            return new Date(b.created_at).getTime() - new Date(a.created_at).getTime();
+        } else if (sortOption === 'due') {
+            return new Date(b.due_date || '9999-12-31').getTime() - new Date(a.due_date || '9999-12-31').getTime();
+        }
+        else if (sortOption === 'important') {
+            return b.important ? 1 : -1;
+        }
+        else if (sortOption === 'completed') {
+            return b.completed ? 1 : -1;
+        }
+        return 0;
+    }
+    );
+
+
+
 
     return (
         <div className="List">
@@ -339,10 +364,10 @@ export const List = () => {
                         opacity: filterOpen ? '1' : '0',
                     }}
                 >
-                    <button >Newest↓</button>
-                    <button >Due↓</button>
-                    <button >Important↓</button>
-                    <button >Completed</button>
+                    <button onClick={() => { setSortOption('newest') }} >Newest↓</button>
+                    <button onClick={() => { setSortOption('due') }}>Due↓</button>
+                    <button onClick={() => { setSortOption('important') }}>Important↓</button>
+                    <button onClick={() => { setSortOption('completed') }}>Completed</button>
 
                 </div>
             </div>
@@ -351,15 +376,12 @@ export const List = () => {
             <div className="Task-Container">
 
 
-                {currentTasks.map(task => (
-                    <div key={task.id} className="Task"
-                        style={{
-                            backgroundColor: `var(--${currentList?.color}-fill)`,
-                        }}
-                    >
+                {sortedTasks.map(task => (
+                    <div className="Task-Closed" key={task.id}>
                         <div className="Task-Name">{task.name}</div>
-                        <div className="Task-Due-Date">Due: {task.due_date}</div>
-                        <div className="Task-Description">Description: {task.description}</div>
+                        <div className="Task-Due-Date">{task.due_date}</div>
+                        <div className="Task-Description">{task.description}</div>
+
                     </div>
                 ))}
 

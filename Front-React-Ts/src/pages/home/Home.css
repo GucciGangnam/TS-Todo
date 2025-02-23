@@ -60,11 +60,11 @@
             transition: 300ms;
             /* outline: 1px dashed pink; */
             width: 100%;
-            overflow: hidden;
+            overflow: scroll;
             display: flex;
             justify-content: space-evenly;
             align-items: center;
-            gap: 10%;
+            gap: 5%;
 
             button {
                 /* outline: 1px dashed pink; */

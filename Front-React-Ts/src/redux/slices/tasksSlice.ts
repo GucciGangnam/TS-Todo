@@ -29,10 +29,14 @@ const listsSlice = createSlice({
         removeTempTask: (state, action: PayloadAction<string>) => {
             return state.filter(task => task.id !== action.payload);
         },
+        updateTempTask: (state, action: PayloadAction<{ tempTaskId: string, trueTask: Task }>) => {
+            const index = state.findIndex(task => task.id === action.payload.tempTaskId);
+            state[index] = action.payload.trueTask;
+        },
         clearTasks: () => initialState,
     },
 });
 
-export const { setTasks, clearTasks, addTempTask, removeTempTask } = listsSlice.actions;
+export const { setTasks, clearTasks, addTempTask, removeTempTask, updateTempTask } = listsSlice.actions;
 export const selectTasks = (state: { tasksData: TasksState }) => state.tasksData;
 export default listsSlice.reducer;

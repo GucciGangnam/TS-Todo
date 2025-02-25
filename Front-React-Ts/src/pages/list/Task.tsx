@@ -68,12 +68,22 @@ export const Task = ({ task, color }: TaskProps) => {
     const handleChangeDueDate = (e: React.ChangeEvent<HTMLInputElement>) => {
         setDueDate(e.target.value);
     };
-    const handleChangeDescription = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const handleChangeDescription = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
         setDescription(e.target.value);
         if (e.target.value === "") {
             setDescription(null);
         }
     };
+
+
+    //Use effect to watch text area od description and increase vertical height of area when more text inputted
+    useEffect(() => {
+        const textarea = document.querySelector(".Task-Description") as HTMLTextAreaElement;
+        if (textarea) {
+            textarea.style.height = "auto";
+            textarea.style.height = textarea.scrollHeight + "px";
+        }
+    }, [description]);
 
     // Save changes to title, des or date
     const saveChanges = async () => {
@@ -266,9 +276,10 @@ export const Task = ({ task, color }: TaskProps) => {
 
 
 
-                <input className="Task-Description"
+                <textarea className="Task-Description"
                     value={description || ""}
                     onChange={handleChangeDescription}
+                    rows={1}
                     placeholder="No Description" />
             </div>
 

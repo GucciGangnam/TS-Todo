@@ -56,7 +56,12 @@
     color: var(--secondary-text);
     background: none;
     border: none;
-    outline: none
+    outline: none;
+    max-width: 100%;
+    resize: none;
+    overflow: hidden;
+    white-space: wrap;
+    vertical-align: top; /* Ensures text starts from the top */
 }
 
 .Completed {

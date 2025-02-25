@@ -131,6 +131,16 @@
         color: var(--primary-text);
         cursor: pointer;
     }
+
+    .Logout-Button{ 
+        background-color: var(--element-fill);
+        padding: 1rem;
+        border: none;
+        border-radius: 0.5rem;
+        font-size: 1rem;
+        color: var(--primary-text);
+        cursor: pointer;
+    }
 }
 
 /* AMINATION */

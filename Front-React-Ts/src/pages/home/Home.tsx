@@ -238,7 +238,7 @@ export const Home = () => {
                 ))}
             </div>
             {/* Logout button */}
-            <button onClick={handleLogout}>Log out</button>
+            <button className="Logout-Button" onClick={handleLogout}>Log out</button>
         </div>
     )
 };

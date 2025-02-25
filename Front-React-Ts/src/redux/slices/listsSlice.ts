@@ -63,12 +63,18 @@ const listsSlice = createSlice({
         },
         decreaseTaskCount: (state, action: PayloadAction<{ listId: string }>) => {
             const index = state.findIndex(list => list.id === action.payload.listId);
-            state[index].task_count++;
+            state[index].task_count--;
+        },
+        removeList: (state, action: PayloadAction<{ listId: string }>) => {
+            return state.filter(list => list.id !== action.payload.listId);
+        },
+        addListBack: (state, action: PayloadAction<List>) => {
+            state.push(action.payload);
         },
         clearLists: () => initialState,
     },
 });
 
-export const { setLists, addTempList, clearLists, updateTempList, removeTempList, updateListColor, updateListName, increaseTaskCount, decreaseTaskCount } = listsSlice.actions;
+export const { setLists, addTempList, clearLists, updateTempList, removeTempList, updateListColor, updateListName, increaseTaskCount, decreaseTaskCount, removeList, addListBack } = listsSlice.actions;
 export const selectLists = (state: { listsData: ListsState }) => state.listsData;
 export default listsSlice.reducer;

@@ -102,7 +102,6 @@ export const Home = () => {
     const [dataFail, setDataFail] = useState(false);
     const handleSubmitForm = async (e: React.FormEvent<HTMLFormElement>) => {
         e.preventDefault();
-        console.log('postong list', inputValue, 'authtoken', user.authToken);
         // First make optimistic update to the UI by adding the new list to the redux store // UNDER CONSTRUCTION 
         // Generate random4 char string
         const randomString = Math.random().toString(36).substring(2, 6);
@@ -155,13 +154,11 @@ export const Home = () => {
                 created_at: data.data.created_at,
                 owner_id: data.data.owner_id,
             }
-            console.log(trueList);
             dispatch(updateTempList(trueList));
         } catch (err) {
             setDataFail(true);
             setTimeout(() => {
                 setDataFail(false);
-                console.log("fail animate fin")
             }, 2000);
             dispatch(removeTempList(randomString));
             console.error(err);

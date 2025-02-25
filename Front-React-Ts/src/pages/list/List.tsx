@@ -61,7 +61,6 @@ export const List = () => {
                         return;
                     }
                     try {
-                        console.log("updating the task name in db")
                         const response = await fetch(`${apiUrl}lists`, {
                             method: 'PUT',
                             headers: {
@@ -77,7 +76,6 @@ export const List = () => {
                             setDataFail(true);
                             setTimeout(() => {
                                 setDataFail(false);
-                                console.log("fail animate fin")
                             }, 2000);
                             if (id) {
                                 dispatch(updateListName({ listId: id, newName: currentList?.name || 'Error' }));
@@ -89,13 +87,11 @@ export const List = () => {
                             setDataSaved(false);
                         }, 2000);
                         const data = await response.json();
-                        console.log(data);
                         // update the redux store with the new task
                     } catch (err) {
                         setDataFail(true);
                         setTimeout(() => {
                             setDataFail(false);
-                            console.log("fail animate fin")
                         }, 2000);
                         // dispatch old name to redux
                         if (id) {
@@ -154,7 +150,6 @@ export const List = () => {
                 setDataSaved(false);
             }, 2000);
             const data = await response.json();
-            console.log(data);
             // update the redux store with the new list
         } catch (err) {
             setDataFail(true);
@@ -228,7 +223,6 @@ export const List = () => {
                     setDataSaved(false);
                 }, 2000);
                 const data = await response.json();
-                console.log(data.data);
                 const trueTask = data.data;
                 // update the redux store with the new list
                 dispatch(updateTempTask({ tempTaskId: randomString, trueTask }));
@@ -273,7 +267,6 @@ export const List = () => {
     const [confirmBoxOpen, setConfirmBoxOpen] = useState(false);
 
     const confirmDeleteList = async () => {
-        console.log('removing list')
         // Save teh list as it is rigjht now 
         const originalList = currentList;
         // REmove from redux 

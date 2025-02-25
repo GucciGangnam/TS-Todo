@@ -87,9 +87,6 @@ export const Task = ({ task, color }: TaskProps) => {
 
     // Save changes to title, des or date
     const saveChanges = async () => {
-        console.log(title);
-        console.log(description);
-        console.log(dueDate);
 
         const originalTitle = task.name;
         const originalDescription = task.description;
@@ -115,7 +112,6 @@ export const Task = ({ task, color }: TaskProps) => {
                 dispatch(updateTempTask({ tempTaskId: task.id, trueTask: { ...task, name: originalTitle, description: originalDescription, due_date: originalDueDate } }))
                 setIsBeingEdited(false);
             } else {
-                console.log("All gooood man");
                 setIsBeingEdited(false);
             }
         } catch (err) {
@@ -164,13 +160,11 @@ export const Task = ({ task, color }: TaskProps) => {
                 setTimeout(() => {
                     setDataSaved(false);
                 }, 2000);
-                console.log('Task Updated');
             } else {
                 setDataFail(true);
                 setTimeout(() => {
                     setDataFail(false);
                 }, 2000);
-                console.log('Error Updating Task');
                 // revert redux 
                 dispatch(updateTempTask({ tempTaskId: task.id, trueTask: { ...task, important: currentState } }))
             }
@@ -207,13 +201,11 @@ export const Task = ({ task, color }: TaskProps) => {
                 setTimeout(() => {
                     setDataSaved(false);
                 }, 2000);
-                console.log('Task Updated');
             } else {
                 setDataFail(true);
                 setTimeout(() => {
                     setDataFail(false);
                 }, 2000);
-                console.log('Error Updating Task');
                 // revert redux 
                 dispatch(updateTempTask({ tempTaskId: task.id, trueTask: { ...task, completed: originalState } }))
             }

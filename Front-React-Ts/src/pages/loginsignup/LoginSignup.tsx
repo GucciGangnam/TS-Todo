@@ -46,7 +46,6 @@ export const LoginSignup = () => {
 
     // Handle Change States
     const handleChangeStateValue = (e: React.ChangeEvent<HTMLInputElement>) => {
-        console.log(e.target.name);
         // Change Name Value
         if (e.target.name === 'name') {
             const formattedName = e.target.value.charAt(0).toUpperCase() + e.target.value.slice(1).toLowerCase();
@@ -149,7 +148,6 @@ export const LoginSignup = () => {
                     setPassword('');
                     setConfirmPassword('');
                     // Make user Data Object 
-                    console.log(result.userData)
                     const userData = { 
                         authToken: result.userData.authToken,
                         name: result.userData.user.name,

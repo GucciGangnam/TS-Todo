@@ -25,14 +25,16 @@
 
     .Color-Selector-Container {
         padding: 1rem;
-        width: 50%;
         box-sizing: border-box;
-        /* outline: 1px dashed pink; */
+        outline: 1px dashed pink;
+        width: 100%;
+        max-width: 400px;
         display: flex;
         justify-content: space-evenly;
 
 
         button {
+            outline: 1px solid yellow;;
             padding: 1rem;
             border: none;
             max-width: 10px;

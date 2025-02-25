@@ -7,7 +7,7 @@ import React, { useState, useEffect } from "react";
 import { useSelector, useDispatch } from "react-redux";
 import { selectUser } from "../../redux/slices/userSlice";
 import { selectTasks, addTempTask, removeTempTask, updateTempTask } from "../../redux/slices/tasksSlice";
-import { selectLists, addTempList, updateTempList, removeTempList, updateListColor, updateListName } from "../../redux/slices/listsSlice";
+import { selectLists, addTempList, updateTempList, removeTempList, updateListColor, updateListName, increaseTaskCount, decreaseTaskCount } from "../../redux/slices/listsSlice";
 
 // RRD
 import { useNavigate, useParams } from "react-router-dom";
@@ -222,18 +222,19 @@ export const List = () => {
                 // Remove temp task from redux
                 dispatch(removeTempTask(randomString));
                 console.error("Error response:", response);
+            } else {
+                setDataSaved(true);
+                setTimeout(() => {
+                    setDataSaved(false);
+                }, 2000);
+                const data = await response.json();
+                console.log(data.data);
+                const trueTask = data.data;
+                // update the redux store with the new list
+                dispatch(updateTempTask({ tempTaskId: randomString, trueTask }));
+                // Upadte the task count in that list
+                dispatch(increaseTaskCount({listId: id}))
             }
-            setDataSaved(true);
-            setTimeout(() => {
-                setDataSaved(false);
-            }, 2000);
-            const data = await response.json();
-            console.log(data.data);
-            const trueTask = data.data;
-            // update the redux store with the new list
-            dispatch(updateTempTask({ tempTaskId: randomString, trueTask }));
-
-
         } catch (err) {
             setDataFail(true);
             setTimeout(() => {

@@ -26,7 +26,6 @@
     .Color-Selector-Container {
         padding: 1rem;
         box-sizing: border-box;
-        outline: 1px dashed pink;
         width: 100%;
         max-width: 400px;
         display: flex;

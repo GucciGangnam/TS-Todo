@@ -4,7 +4,7 @@ import { set } from "mongoose";
 import "./Task.css";
 
 // React 
-import React, { use, useState } from "react";
+import React, { useEffect, useState } from "react";
 
 // RRD 
 
@@ -45,19 +45,85 @@ export const Task = ({ task, color }: TaskProps) => {
     const dispatch = useDispatch();
     const user = useSelector(selectUser);
 
+
     // Form states
     const [title, setTitle] = useState(task.name);
     const [dueDate, setDueDate] = useState(task.due_date);
     const [description, setDescription] = useState(task.description);
 
-    const [newTitle, setNewTitle] = useState('');
-    const [newDueDate, setNewDueData] = useState('');
-    const [newDescription, setNewDescription] = useState('');
+    // UseEffect to check if originals have neem dited 
+    const [isBeingEdited, setIsBeingEdited] = useState(false);
+    useEffect(() => {
+        if ((title !== task.name) || (dueDate !== task.due_date) || (description !== task.description)) {
+            setIsBeingEdited(true);
+        } else {
+            setIsBeingEdited(false);
+        }
+    }, [title, dueDate, description])
 
 
-    const HandleChangeTitle = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const handleChangeTitle = (e: React.ChangeEvent<HTMLInputElement>) => {
         setTitle(e.target.value);
     }
+    const handleChangeDueDate = (e: React.ChangeEvent<HTMLInputElement>) => {
+        setDueDate(e.target.value);
+    };
+    const handleChangeDescription = (e: React.ChangeEvent<HTMLInputElement>) => {
+        setDescription(e.target.value);
+        if (e.target.value === "") {
+            setDescription(null);
+        }
+    };
+
+    // Save changes to title, des or date
+    const saveChanges = async () => {
+        console.log(title);
+        console.log(description);
+        console.log(dueDate);
+
+        const originalTitle = task.name;
+        const originalDescription = task.description;
+        const originalDueDate = task.due_date;
+
+        // UPdate redux with new task 
+        dispatch(updateTempTask({ tempTaskId: task.id, trueTask: { ...task, name: title, description: description, due_date: dueDate } }))
+        try {
+            const response = await fetch(`${apiUrl}tasks`, {
+                method: 'PUT',
+                headers: {
+                    'Content-Type': 'application/json',
+                    Authorization: `Bearer ${user.authToken}`,
+                },
+                body: JSON.stringify({
+                    newName: title,
+                    newDescription: description,
+                    newDueDate: dueDate,
+                    taskId: task.id
+                }),
+            });
+            if (!response.ok) {
+                dispatch(updateTempTask({ tempTaskId: task.id, trueTask: { ...task, name: originalTitle, description: originalDescription, due_date: originalDueDate } }))
+                setIsBeingEdited(false);
+            } else {
+                console.log("All gooood man");
+                setIsBeingEdited(false);
+            }
+        } catch (err) {
+            dispatch(updateTempTask({ tempTaskId: task.id, trueTask: { ...task, name: originalTitle, description: originalDescription, due_date: originalDueDate } }))
+            setIsBeingEdited(false);
+            console.error(err);
+        }
+
+    }
+
+    // revert changes to form 
+    const revertChanges = () => {
+        setTitle(task.name);
+        setDescription(task.description);
+        setDueDate(task.due_date)
+    }
+
+
 
     // DB Success State 
     // DB success states
@@ -153,6 +219,8 @@ export const Task = ({ task, color }: TaskProps) => {
 
 
 
+
+
     return (
         <div className='Task' style={{ backgroundColor: `var(--${color}-fill`, opacity: task.completed ? "0.5" : "1" }} >
             {/* Animation */}
@@ -184,25 +252,68 @@ export const Task = ({ task, color }: TaskProps) => {
             <div className="Task-Info-Wrapper" style={{ textDecoration: task.completed ? 'line-through' : 'none' }}>
                 <input className="Task-Name"
                     value={title}
-                    onChange={HandleChangeTitle}
+                    onChange={handleChangeTitle}
                 />
 
-                <input className="Task-Due-Date"
-                    value={dueDate || "Not Due"} />
+
+
+                {dueDate && <input
+                    className="Task-Due-Date"
+                    type="date"
+                    value={dueDate || ''}
+                    onChange={handleChangeDueDate}
+                />}
+
+
 
                 <input className="Task-Description"
-                    value={description || "No Description"} />
+                    value={description || ""}
+                    onChange={handleChangeDescription}
+                    placeholder="No Description" />
             </div>
 
-            <div className="Completed">
-                <svg
-                    onClick={toggleCompleted}
-                    viewBox="0 0 24 24" fill="red" xmlns="http://www.w3.org/2000/svg">
-                    <path style={{
-                        fill: task.completed ? `var(--${color}-fill)` : `var(--background)`
-                    }} d="M12 2C6.49 2 2 6.49 2 12C2 17.51 6.49 22 12 22C17.51 22 22 17.51 22 12C22 6.49 17.51 2 12 2ZM16.78 9.7L11.11 15.37C10.97 15.51 10.78 15.59 10.58 15.59C10.38 15.59 10.19 15.51 10.05 15.37L7.22 12.54C6.93 12.25 6.93 11.77 7.22 11.48C7.51 11.19 7.99 11.19 8.28 11.48L10.58 13.78L15.72 8.64C16.01 8.35 16.49 8.35 16.78 8.64C17.07 8.93 17.07 9.4 16.78 9.7Z" fill="#292D32" />
-                </svg>
-            </div>
+            {isBeingEdited ?
+                <div className="EditBtnContainer">
+                    <button onClick={saveChanges} aria-label="Save">
+                        <svg
+                            id="SaveSVG"
+                            fill="var(--background)"
+                            width="33px"
+                            height="33px"
+                            viewBox="-1 0 19 19"
+                            xmlns="http://www.w3.org/2000/svg">
+                            <path d="M16.417 9.579A7.917 7.917 0 1 1 8.5 1.662a7.917 7.917 0 0 1 7.917 7.917zm-3.587-4.05a.318.318 0 0 0-.317-.317H4.449a.317.317 0 0 0-.317.317v6.86a.866.866 0 0 0 .226.538l.816.8a.895.895 0 0 0 .543.222h6.796a.318.318 0 0 0 .317-.317zm-1.598 3.066a.318.318 0 0 1-.316.317h-4.87a.317.317 0 0 1-.317-.317V6.22a.317.317 0 0 1 .317-.317h4.87a.318.318 0 0 1 .316.317zm-.36 1.888v2.543a.318.318 0 0 1-.317.317H6.4a.318.318 0 0 1-.316-.317v-2.543a.317.317 0 0 1 .316-.316h4.155a.317.317 0 0 1 .316.316zm-3.15.486h-.876v1.591h.876z" />
+                        </svg>
+                    </button>
+                    <button
+                        onClick={revertChanges}
+                        aria-label="Cancel">
+                        <svg
+                            id="CancelSVG"
+                            xmlns="http://www.w3.org/2000/svg"
+                            fill="var(--background)"
+                            width="33px"
+                            height="33px"
+                            viewBox="0 0 24 24">
+                            <path
+                                d="M12 2C6.47 2 2 6.47 2 12s4.47 10 10 10 10-4.47 10-10S17.53 2 12 2zm5 13.59L15.59 17 12 13.41 8.41 17 7 15.59 10.59 12 7 8.41 8.41 7 12 10.59 15.59 7 17 8.41 13.41 12 17 15.59z" />
+                        </svg>
+                    </button>
+                </div>
+                :
+                <div className="Completed">
+                    <svg
+                        onClick={toggleCompleted}
+                        viewBox="0 0 24 24" fill="red" xmlns="http://www.w3.org/2000/svg">
+                        <path style={{
+                            fill: task.completed ? `var(--${color}-fill)` : `var(--background)`
+                        }} d="M12 2C6.49 2 2 6.49 2 12C2 17.51 6.49 22 12 22C17.51 22 22 17.51 22 12C22 6.49 17.51 2 12 2ZM16.78 9.7L11.11 15.37C10.97 15.51 10.78 15.59 10.58 15.59C10.38 15.59 10.19 15.51 10.05 15.37L7.22 12.54C6.93 12.25 6.93 11.77 7.22 11.48C7.51 11.19 7.99 11.19 8.28 11.48L10.58 13.78L15.72 8.64C16.01 8.35 16.49 8.35 16.78 8.64C17.07 8.93 17.07 9.4 16.78 9.7Z" fill="#292D32" />
+                    </svg>
+                </div>
+            }
+
+
+
 
 
 

@@ -18,7 +18,7 @@
     align-items: center;
     justify-content: center;
 
-    svg{ 
+    svg {
         cursor: pointer;
     }
 }
@@ -69,5 +69,51 @@
         width: 2rem;
         height: 2rem;
         cursor: pointer;
+    }
+}
+
+
+.EditBtnContainer {
+    display: flex;
+    gap: 5px;
+
+
+    button {
+        background: none;
+        border: none;
+        padding: 0;
+        cursor: pointer;
+        display: flex;
+        align-items: center;
+        opacity: 0.5;
+        transition: 300ms;
+    }
+
+    button:hover {
+        transform: scale(1.3);
+        opacity: 1;
+    }
+
+    #SaveSVG {
+        animation: scaleUp 0.3s ease-out;
+        fill: var(--green);
+    }
+
+    #CancelSVG {
+        animation: scaleUp 0.5s ease-out;
+        fill: var(--red);
+    }
+}
+
+
+/* ANIMATIONS */
+
+@keyframes scaleUp {
+    0% {
+        transform: scale(0.1);
+    }
+
+    100% {
+        transform: scale(1);
     }
 }

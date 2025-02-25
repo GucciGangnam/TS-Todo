@@ -49,6 +49,9 @@ export const readTask = async (req: Request, res: Response) => {
 
 // Update Task Needs; Name, dexceription, duedate, completed, important
 export const updateTask = async (req: Request, res: Response, next: NextFunction) => {
+
+
+
     try {
         // Make sure owner owns this task;
         const userId = req.user;
@@ -63,6 +66,10 @@ export const updateTask = async (req: Request, res: Response, next: NextFunction
             ]);
         }
         const { newName, newDescription, newDueDate, newCompleted, newImportant } = req.body;
+        // REMOVE MEEEEEEEEEEE
+        console.log("hello world:");
+        console.log(newDueDate)
+        // REMOVE MEEEEEEEEEEE
         const updates: string[] = [];
         const values: any[] = [];
         let index = 1;

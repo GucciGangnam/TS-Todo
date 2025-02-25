@@ -9,7 +9,6 @@ import { create } from "domain";
 // Create Task 
 // Requires body.parentListId, body.taskName
 export const createTask = async (req: Request, res: Response, next: NextFunction) => {
-    console.log("Creating task")
     try {
 
         const userId = req.user;
@@ -43,7 +42,6 @@ export const createTask = async (req: Request, res: Response, next: NextFunction
 
 // Read Task -- Maybe not needed
 export const readTask = async (req: Request, res: Response) => {
-    console.log("Reading task")
     res.send("Reading task")
 }
 
@@ -66,10 +64,6 @@ export const updateTask = async (req: Request, res: Response, next: NextFunction
             ]);
         }
         const { newName, newDescription, newDueDate, newCompleted, newImportant } = req.body;
-        // REMOVE MEEEEEEEEEEE
-        console.log("hello world:");
-        console.log(newDueDate)
-        // REMOVE MEEEEEEEEEEE
         const updates: string[] = [];
         const values: any[] = [];
         let index = 1;

@@ -68,14 +68,11 @@ export const createUserHandler: RequestHandler[] = [
 
 // Read User // This is donr at login. - NOT NEEDED
 export const readUser = async (req: Request, res: Response) => {
-    console.log("Reading user")
     res.send("Reading user")
 }
 
 // Update user -- Maybe dont bopther implementing
 export const updateUser = async (req: Request, res: Response) => {
-    console.log("Updating user")
-    console.log(req.user)
     res.send("Updating user")
 }
 

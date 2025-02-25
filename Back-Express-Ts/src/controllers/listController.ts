@@ -7,8 +7,6 @@ import { AppError } from "../utils/appError";
 // CONTROLLER //
 // Create List
 export const createList = async (req: Request, res: Response, next: NextFunction) => {
-    console.log("Creating list");
-    console.log(req.body);
     try {
         const userId = req.user;
         const listName = req.body.listName;
@@ -36,7 +34,6 @@ export const createList = async (req: Request, res: Response, next: NextFunction
 
 // Read List - Maybe not needed
 export const readList = async (req: Request, res: Response) => {
-    console.log("Reading list")
     res.json("Reading list")
 }
 
@@ -45,7 +42,6 @@ export const updateList = async (req: Request, res: Response, next: NextFunction
     try {
         const userId = req.user;
         const { listId, newColor, newName } = req.body;
-        console.log(listId, newColor, newName)
         // Ensure listId and newColor are provided
         if (!listId) {
             throw new AppError(403, "List ID required", [

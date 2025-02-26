@@ -46,18 +46,18 @@ var bcrypt = require('bcrypt');
 var jwt = require('jsonwebtoken');
 // LOG IN USER
 var loginUser = function (req, res, next) { return __awaiter(void 0, void 0, void 0, function () {
-    var email, password, userExists, user, isMatch, jwtSecret, payload, token, err_1;
+    var email, password, userExists, user, isMatch, jwtSecret, payload, token, userDataQuery, userDataValues, userData, listsDataQuery, listsDataValue, listsData, taskDataQuery, taskDataValue, tasksData, err_1;
     return __generator(this, function (_a) {
         switch (_a.label) {
             case 0:
-                _a.trys.push([0, 3, , 4]);
+                _a.trys.push([0, 8, , 9]);
                 email = req.body.email;
                 password = req.body.password;
                 return [4 /*yield*/, pool_1.default.query('SELECT * FROM users WHERE email = $1', [email])];
             case 1:
                 userExists = _a.sent();
                 if (userExists.rows.length < 1) {
-                    throw new appError_1.AppError(409, "Invalid login credentials", [
+                    throw new appError_1.AppError(401, "Invalid login credentials", [
                         { field: "login", message: "Invalid login credentials" }
                     ]);
                 }
@@ -65,32 +65,47 @@ var loginUser = function (req, res, next) { return __awaiter(void 0, void 0, voi
                 return [4 /*yield*/, bcrypt.compare(password, user.hashed_password)];
             case 2:
                 isMatch = _a.sent();
-                if (isMatch) {
-                    jwtSecret = process.env.JWT_SECRET;
-                    payload = {
-                        userId: user.id, // Add user info you want to include in the token
-                    };
-                    token = jwt.sign(payload, jwtSecret, { expiresIn: '1h' });
-                    res.status(200).json({
-                        success: true,
-                        message: "Login successful",
-                        data: {
-                            token: token
-                        }
-                    });
-                    return [2 /*return*/];
-                }
-                else {
-                    throw new appError_1.AppError(409, "Invalid login credentials", [
-                        { field: "login", message: "Invalid login credentials" }
-                    ]);
-                }
-                return [3 /*break*/, 4];
+                if (!isMatch) return [3 /*break*/, 6];
+                jwtSecret = process.env.JWT_SECRET;
+                payload = {
+                    userId: user.id
+                };
+                token = jwt.sign(payload, jwtSecret, { expiresIn: '1h' });
+                userDataQuery = "SELECT name, email FROM users WHERE email = $1";
+                userDataValues = [email];
+                return [4 /*yield*/, pool_1.default.query(userDataQuery, userDataValues)];
             case 3:
+                userData = _a.sent();
+                listsDataQuery = "\n            SELECT l.id, \n                   COALESCE(l.name, '') AS name, \n                   COALESCE(l.color, '') AS color, \n                   l.created_at,\n                   COUNT(t.id) AS task_count\n            FROM lists l\n            LEFT JOIN tasks t ON l.id = t.list_id\n            WHERE l.owner_id = $1\n            GROUP BY l.id, l.name, l.color, l.created_at;\n        ";
+                listsDataValue = [user.id];
+                return [4 /*yield*/, pool_1.default.query(listsDataQuery, listsDataValue)];
+            case 4:
+                listsData = _a.sent();
+                taskDataQuery = 'SELECT * FROM tasks WHERE list_id = ANY (SELECT id FROM lists WHERE owner_id = $1)';
+                taskDataValue = [user.id];
+                return [4 /*yield*/, pool_1.default.query(taskDataQuery, taskDataValue)];
+            case 5:
+                tasksData = _a.sent();
+                res.status(200).json({
+                    success: true,
+                    message: "Login successful",
+                    userData: {
+                        authToken: token,
+                        user: userData.rows[0],
+                        lists: listsData.rows,
+                        tasks: tasksData.rows
+                    }
+                });
+                return [2 /*return*/];
+            case 6: throw new appError_1.AppError(401, "Invalid login credentials", [
+                { field: "login", message: "Invalid login credentials" }
+            ]);
+            case 7: return [3 /*break*/, 9];
+            case 8:
                 err_1 = _a.sent();
                 next(err_1);
-                return [3 /*break*/, 4];
-            case 4: return [2 /*return*/];
+                return [3 /*break*/, 9];
+            case 9: return [2 /*return*/];
         }
     });
 }); };
@@ -103,16 +118,19 @@ var authenticateUser = function (req, res, next) { return __awaiter(void 0, void
         try {
             token = (_a = req.headers['authorization']) === null || _a === void 0 ? void 0 : _a.split(' ')[1];
             if (!token) {
-                // throw error
+                throw new appError_1.AppError(403, "Invalid access token", [
+                    { field: "authentication", message: "Invalid access token" }
+                ]);
             }
             jwtSecret = process.env.JWT_SECRET;
             decoded = jwt.verify(token, jwtSecret);
-            // Attach the decoded user data to the request
             req.user = decoded.userId;
             next();
         }
         catch (err) {
-            console.error(err);
+            if (process.env.NODE_ENV !== 'test') {
+                console.error(err);
+            }
             next(err);
         }
         return [2 /*return*/];

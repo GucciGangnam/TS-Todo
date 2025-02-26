@@ -78,7 +78,6 @@ describe('POST /api/users', function () {
                     return [4 /*yield*/, pool_1.default.query('SELECT * FROM users WHERE email = $1', [newUser.email])];
                 case 2:
                     dbResponse = _a.sent();
-                    console.log(dbResponse.rows); // This will give direct insight into what's happening.
                     expect(dbResponse.rows.length).toBe(1); // Ensure exactly one user is in the database
                     expect(dbResponse.rows[0].name).toBe(newUser.name);
                     expect(dbResponse.rows[0].email).toBe(newUser.email);
@@ -162,6 +161,78 @@ describe('POST /api/users', function () {
                     finalCount = parseInt(finalCountResult.rows[0].count);
                     // Assert that the user count hasn't changed
                     expect(finalCount).toBe(initialCount);
+                    return [2 /*return*/];
+            }
+        });
+    }); });
+});
+describe('DELETE /api/user', function () {
+    var authToken;
+    var parentListId;
+    // Clear users before all tests in this block
+    beforeAll(function () { return __awaiter(void 0, void 0, void 0, function () {
+        var newUserBody, loginBody, loginResponse, newList, newTask1, newTask2;
+        return __generator(this, function (_a) {
+            switch (_a.label) {
+                case 0: 
+                // Clear the users table to start fresh
+                return [4 /*yield*/, pool_1.default.query('DELETE FROM users')];
+                case 1:
+                    // Clear the users table to start fresh
+                    _a.sent();
+                    newUserBody = {
+                        name: 'Test Delete',
+                        email: 'test@example.com',
+                        password: 'Password123'
+                    };
+                    return [4 /*yield*/, (0, supertest_1.default)(index_1.app).post('/api/users').send(newUserBody)];
+                case 2:
+                    _a.sent();
+                    loginBody = {
+                        email: 'test@example.com',
+                        password: 'Password123'
+                    };
+                    return [4 /*yield*/, (0, supertest_1.default)(index_1.app).post('/api/auth/login').send(loginBody)];
+                case 3:
+                    loginResponse = _a.sent();
+                    authToken = loginResponse.body.userData.authToken;
+                    return [4 /*yield*/, (0, supertest_1.default)(index_1.app).post('/api/lists').set('Authorization', "Bearer ".concat(authToken)).send({ listName: 'New List' })];
+                case 4:
+                    newList = _a.sent();
+                    parentListId = newList.body.data.id;
+                    return [4 /*yield*/, (0, supertest_1.default)(index_1.app).post('/api/tasks').set('Authorization', "Bearer ".concat(authToken)).send({ taskName: 'New Task1', parentListId: parentListId })];
+                case 5:
+                    newTask1 = _a.sent();
+                    return [4 /*yield*/, (0, supertest_1.default)(index_1.app).post('/api/tasks').set('Authorization', "Bearer ".concat(authToken)).send({ taskName: 'New Task2', parentListId: parentListId })];
+                case 6:
+                    newTask2 = _a.sent();
+                    return [2 /*return*/];
+            }
+        });
+    }); });
+    it('Should sucesfully delete the user and all their lists and tasks from the database', function () { return __awaiter(void 0, void 0, void 0, function () {
+        var response, usersInDB, listsInDb, tasksInDb;
+        return __generator(this, function (_a) {
+            switch (_a.label) {
+                case 0: return [4 /*yield*/, (0, supertest_1.default)(index_1.app)
+                        .delete('/api/users')
+                        .set('Authorization', "Bearer ".concat(authToken))];
+                case 1:
+                    response = _a.sent();
+                    expect(response.status).toBe(200);
+                    expect(response.body.message).toBe("User deleted successfully");
+                    return [4 /*yield*/, pool_1.default.query("SELECT * FROM users")];
+                case 2:
+                    usersInDB = _a.sent();
+                    expect(usersInDB.rows.length).toBe(0);
+                    return [4 /*yield*/, pool_1.default.query("SELECT * FROM lists")];
+                case 3:
+                    listsInDb = _a.sent();
+                    expect(listsInDb.rows.length).toBe(0);
+                    return [4 /*yield*/, pool_1.default.query("SELECT * FROM tasks")];
+                case 4:
+                    tasksInDb = _a.sent();
+                    expect(tasksInDb.rows.length).toBe(0);
                     return [2 /*return*/];
             }
         });

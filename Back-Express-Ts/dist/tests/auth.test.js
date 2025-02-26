@@ -89,7 +89,10 @@ describe('POST /api/auth/login', function () {
                     expect(loginResponse.status).toBe(200);
                     expect(loginResponse.body.success).toBe(true);
                     expect(loginResponse.body.message).toBe('Login successful');
-                    expect(loginResponse.body.data).toHaveProperty('token');
+                    expect(loginResponse.body.userData).toHaveProperty('authToken');
+                    expect(loginResponse.body.userData).toHaveProperty('user');
+                    expect(loginResponse.body.userData).toHaveProperty('lists');
+                    expect(loginResponse.body.userData).toHaveProperty('tasks');
                     return [2 /*return*/];
             }
         });

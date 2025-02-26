@@ -16,7 +16,12 @@ var auth_1 = __importDefault(require("./routers/auth"));
 var errorHanlderController_1 = require("./controllers/errorHanlderController");
 dotenv_1.default.config();
 exports.app = (0, express_1.default)();
-exports.app.use((0, cors_1.default)());
+var allowedOrigin = process.env.FRONT_END_URL;
+exports.app.use((0, cors_1.default)({
+    origin: allowedOrigin,
+    methods: ['GET', 'POST', 'PUT', 'DELETE'],
+    credentials: true, // Allow cookies/auth headers
+}));
 exports.app.use(express_1.default.json());
 exports.app.use(express_1.default.urlencoded({ extended: true }));
 exports.app.use("/api/users", users_1.default);

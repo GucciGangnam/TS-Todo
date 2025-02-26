@@ -101,7 +101,6 @@ exports.createUserHandler = [
                     return [2 /*return*/];
                 case 4:
                     err_1 = _b.sent();
-                    console.error(err_1); // Log the error for debugging
                     next(err_1);
                     return [3 /*break*/, 5];
                 case 5: return [2 /*return*/];
@@ -109,30 +108,44 @@ exports.createUserHandler = [
         });
     }); }
 ];
-// Read User 
+// Read User // This is donr at login. - NOT NEEDED
 var readUser = function (req, res) { return __awaiter(void 0, void 0, void 0, function () {
     return __generator(this, function (_a) {
-        console.log("Reading user");
         res.send("Reading user");
         return [2 /*return*/];
     });
 }); };
 exports.readUser = readUser;
-// Update user 
+// Update user -- Maybe dont bopther implementing
 var updateUser = function (req, res) { return __awaiter(void 0, void 0, void 0, function () {
     return __generator(this, function (_a) {
-        console.log("Updating user");
         res.send("Updating user");
         return [2 /*return*/];
     });
 }); };
 exports.updateUser = updateUser;
-// Delete User
-var deleteUser = function (req, res) { return __awaiter(void 0, void 0, void 0, function () {
+// Delete User - Requires authentification
+var deleteUser = function (req, res, next) { return __awaiter(void 0, void 0, void 0, function () {
+    var userId, deleteUserQuery, deleteUserValues, err_2;
     return __generator(this, function (_a) {
-        console.log("Deleting user");
-        res.send("Deleting user");
-        return [2 /*return*/];
+        switch (_a.label) {
+            case 0:
+                _a.trys.push([0, 2, , 3]);
+                userId = req.user;
+                deleteUserQuery = "DELETE FROM users WHERE id = $1";
+                deleteUserValues = [userId];
+                return [4 /*yield*/, pool_1.default.query(deleteUserQuery, deleteUserValues)];
+            case 1:
+                _a.sent();
+                // Response 
+                res.status(200).json({ success: true, message: "User deleted successfully" });
+                return [2 /*return*/];
+            case 2:
+                err_2 = _a.sent();
+                next(err_2);
+                return [3 /*break*/, 3];
+            case 3: return [2 /*return*/];
+        }
     });
 }); };
 exports.deleteUser = deleteUser;

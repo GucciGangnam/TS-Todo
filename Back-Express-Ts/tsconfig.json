@@ -4,7 +4,8 @@
     "rootDir": "./src",
     "strict": true,
     "moduleResolution": "node",
-    "esModuleInterop": true
+    "esModuleInterop": true,
+    "lib": ["ES2015", "DOM"]
   },
   "include": [
     "src",

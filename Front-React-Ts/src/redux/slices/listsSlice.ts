@@ -28,7 +28,7 @@ const listsSlice = createSlice({
     initialState,
     reducers: {
         setLists: (state, action: PayloadAction<ListsState>) => {
-            return action.payload;
+            Object.assign(state, action.payload); // Mutates state safely
         },
         addTempList: (state, action: PayloadAction<List>) => {
             state.push(action.payload);

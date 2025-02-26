@@ -17,7 +17,7 @@ const userSlice = createSlice({
     initialState,
     reducers: {
         setUser: (state, action: PayloadAction<UserState>) => {
-            return action.payload;
+            Object.assign(state, action.payload); // Mutates state safely
         },
         clearUser: () => initialState,
     },

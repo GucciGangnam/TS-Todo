@@ -1,7 +1,7 @@
 import './App.css';
 // Redux
 import { useSelector } from "react-redux";
-import { selectUser, clearUser } from "./redux/slices/userSlice.ts";
+import { selectUser } from "./redux/slices/userSlice.ts";
 //RRD
 import { Navigate, Route, Routes } from 'react-router-dom'; // Import Navigate
 //Pages

@@ -9,7 +9,7 @@ import { jwtDecode } from 'jwt-decode';
 import { useSelector } from "react-redux";
 import { selectUser, clearUser } from "../../redux/slices/userSlice";
 import { selectLists, addTempList, updateTempList, clearLists, removeTempList } from "../../redux/slices/listsSlice";
-import { selectTasks, clearTasks } from "../../redux/slices/tasksSlice";
+import { clearTasks } from "../../redux/slices/tasksSlice";
 import { persistor } from "../../redux/store";
 import { useDispatch } from 'react-redux';
 // RRD 

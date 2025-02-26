@@ -2,19 +2,19 @@
 // style 
 import "./List.css";
 // React
-import React, { useState, useEffect, use } from "react";
+import React, { useState, useEffect } from "react";
 // Redux
 import { useSelector, useDispatch } from "react-redux";
 import { selectUser } from "../../redux/slices/userSlice";
 import { selectTasks, addTempTask, removeTempTask, updateTempTask } from "../../redux/slices/tasksSlice";
-import { selectLists, addTempList, updateTempList, removeTempList, updateListColor, updateListName, increaseTaskCount, decreaseTaskCount, removeList, addListBack } from "../../redux/slices/listsSlice";
+import { selectLists, updateListColor, updateListName, increaseTaskCount, removeList, addListBack } from "../../redux/slices/listsSlice";
 
 // RRD
 import { useNavigate, useParams } from "react-router-dom";
 
 // COMPOENNETS 
 import { DBSuccess } from "../../appLevelComponents/DBSuccess";
-import { Task } from "./task";
+import { Task } from "./Task";
 
 // Variables
 const apiUrl = import.meta.env.VITE_API_URL;
@@ -86,7 +86,7 @@ export const List = () => {
                         setTimeout(() => {
                             setDataSaved(false);
                         }, 2000);
-                        const data = await response.json();
+                        // const data = await response.json();
                         // update the redux store with the new task
                     } catch (err) {
                         setDataFail(true);
@@ -149,7 +149,7 @@ export const List = () => {
             setTimeout(() => {
                 setDataSaved(false);
             }, 2000);
-            const data = await response.json();
+            // const data = await response.json();
             // update the redux store with the new list
         } catch (err) {
             setDataFail(true);

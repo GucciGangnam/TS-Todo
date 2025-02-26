@@ -2,7 +2,7 @@
 // Styles
 import "./LoginSignup.css";
 // React
-import { useState, useEffect, useRef } from "react";
+import { useState } from "react";
 // Redux 
 import { useDispatch } from "react-redux";
 import { setUser } from "../../redux/slices/userSlice";

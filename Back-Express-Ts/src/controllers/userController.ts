@@ -1,6 +1,6 @@
 // IMPORTS 
 import { Request, Response, NextFunction, RequestHandler } from "express";
-import { body, validationResult } from 'express-validator';
+const { body, validationResult } = require('express-validator');
 import { AppError } from "../utils/appError";
 import pool from "../database/pool";
 

@@ -2,11 +2,11 @@
 // Global Error Handler middlewear
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.errorHandler = void 0;
-var errorHandler = function (err, req, res, next) {
+const errorHandler = (err, req, res, next) => {
     if (process.env.NODE_ENV === 'test') {
         console.error(err);
     }
-    var statusCode = err.statusCode || 500;
+    const statusCode = err.statusCode || 500;
     res.status(statusCode).json({
         statusCode: statusCode,
         success: false,
@@ -15,3 +15,4 @@ var errorHandler = function (err, req, res, next) {
     });
 };
 exports.errorHandler = errorHandler;
+//# sourceMappingURL=errorHanlderController.js.map

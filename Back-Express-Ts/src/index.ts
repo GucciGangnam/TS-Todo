@@ -15,14 +15,20 @@ dotenv.config();
 export const app = express();
 
 const allowedOrigin = process.env.FRONT_END_URL;
-console.log("Allowed Origin:", allowedOrigin); // Added to debug live cors error
-app.use(
+app.use((req, res, next) => {
+    const incomingOrigin = req.headers.origin;
+    console.log("Incoming Origin:", incomingOrigin);
+    console.log("Allowed Origin:", allowedOrigin);
+
+    // Your CORS middleware
     cors({
         origin: allowedOrigin,
         methods: ['GET', 'POST', 'PUT', 'DELETE'],
-        credentials: true, // Allow cookies/auth headers
-    })
-);
+        credentials: true,
+    })(req, res, next); // Call the cors middleware function
+});
+
+
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 

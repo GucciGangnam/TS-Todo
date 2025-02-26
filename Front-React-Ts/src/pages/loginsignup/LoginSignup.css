@@ -60,7 +60,6 @@
     }
 
     form {
-        /* outline: 1px solid pink; */
         width: 400px;
         max-width: 90vw;
         padding: 1rem;
@@ -121,5 +120,38 @@
         button:hover{ 
             opacity: 1;
         }
+    }
+}
+
+.Demo-Button{ 
+    padding: 0.8rem;
+    border-radius: 10px;
+    transition: 300ms;
+    border: none;
+    background-color: var(--element-fill);
+    background-color: rgb(79, 120, 195);
+    transition: 300ms;
+    color: var(--primary-text);
+    font-size: 1rem;
+    cursor: pointer;
+    opacity: 0.5;
+    animation: attract 2s infinite;
+}
+.Demo-Button:hover{ 
+    opacity: 1;
+    animation: none;
+}
+
+/* Animation */
+
+@keyframes attract {
+    0% {
+        opacity: 1;
+    }
+    50% {
+        opacity: 0.5;
+    }
+    100% {
+        opacity: 1;
     }
 }

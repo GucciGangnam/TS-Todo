@@ -73,14 +73,11 @@ export const LoginSignup = () => {
     // Form Submit
     const handleFormSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
         e.preventDefault();
-
         if ((formState === "Signup") && (password !== confirmPassword)) {
             return;
         }
         setLoading(true);
-
-
-        // IF SIGN UP
+        //////////////////////////////// IF SIGN UP
         if (formState === "Signup") {
             try {
                 const res = await fetch(`${apiUrl}users`, {
@@ -94,15 +91,14 @@ export const LoginSignup = () => {
                         password: password,
                     }),
                 });
-
                 const result = await res.json();
                 if (!res.ok) {
                     console.error("Error response:", result); // Log full response
                     if (result.statusCode === 409) {
                         setEmailPlaceholder('Email already in use');
                         setEmail('');
-                    } else 
-                    throw new Error(result.message || "Failed to fetch");
+                    } else
+                        throw new Error(result.message || "Failed to fetch");
                 } else {
                     setName('')
                     setPassword('')
@@ -117,9 +113,7 @@ export const LoginSignup = () => {
                 }, 2000)
             }
         }
-
-
-        // IF LOGIN
+        //////////////////////////////// IF LOGIN
         if (formState === "Log in") {
             try {
                 const res = await fetch(`${apiUrl}auth/login`, {
@@ -148,7 +142,7 @@ export const LoginSignup = () => {
                     setPassword('');
                     setConfirmPassword('');
                     // Make user Data Object 
-                    const userData = { 
+                    const userData = {
                         authToken: result.userData.authToken,
                         name: result.userData.user.name,
                         email: result.userData.user.email
@@ -161,8 +155,6 @@ export const LoginSignup = () => {
                     dispatch(setTasks(taskData));
                     navigate('/');
                 }
-
-
             } catch (err) {
                 console.error("Error fetching data:", err);
             } finally {
@@ -171,6 +163,87 @@ export const LoginSignup = () => {
                 }, 2000)
             }
         }
+    }
+
+    //Demo Account
+    const loginAsDemoUser = async() => { 
+        let randomNumber = Math.floor(1000000000 + Math.random() * 9000000000).toString();
+        const randomString = Math.random().toString(36).substring(2, 8);
+        setLoading(true);
+        try {
+            const res = await fetch(`${apiUrl}users`, {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json",
+                },
+                body: JSON.stringify({
+                    name: `DemoUser${randomString}`,
+                    email: `${randomString}@${randomString}.com`,
+                    password: `${randomString}A1${randomNumber}`,
+                }),
+            });
+            const result = await res.json();
+            if (!res.ok) {
+                console.error("Error response:", result); // Log full response
+            } else { 
+                /// Log user in 
+                try {
+                    const res = await fetch(`${apiUrl}auth/login`, {
+                        method: "POST",
+                        headers: {
+                            "Content-Type": "application/json",
+                        },
+                        body: JSON.stringify({
+                            email: `${randomString}@${randomString}.com`,
+                            password: `${randomString}A1${randomNumber}`,
+                        }),
+                    });
+                    const result = await res.json();
+                    if (!res.ok) {
+                        console.error("Error response:", result); // Log full response
+                        if (result.statusCode === 401) {
+                            setPassword('')
+                            setPasswordPlaceholder("Incorrect password or email")
+                        }
+                        throw new Error(result.message || "Failed to fetch");
+                    } else {
+                        setEmailPlaceholder("Email");
+                        setPasswordPlaceholder("Password");
+                        setName('');
+                        setEmail('');
+                        setPassword('');
+                        setConfirmPassword('');
+                        // Make user Data Object 
+                        const userData = {
+                            authToken: result.userData.authToken,
+                            name: result.userData.user.name,
+                            email: result.userData.user.email
+                        }
+                        const listData = result.userData.lists;
+                        const taskData = result.userData.tasks;
+                        // Save user Dtaa to redux
+                        dispatch(setUser(userData));
+                        dispatch(setLists(listData));
+                        dispatch(setTasks(taskData));
+                        navigate('/');
+                    }
+                } catch (err) {
+                    console.error("Error fetching data:", err);
+                } finally {
+                    setTimeout(() => {
+                        setLoading(false);
+                    }, 2000)
+                }
+                // END log user in 
+            }
+        } catch (err) {
+            console.error("Error fetching data:", err);
+        } finally {
+            setTimeout(() => {
+                setLoading(false);
+            }, 2000)
+        }
+
 
     }
 
@@ -258,9 +331,15 @@ export const LoginSignup = () => {
                             }}>
                             {formState}
                         </button>
-
                     </form>
+
+                    <button onClick={loginAsDemoUser} className="Demo-Button">
+                        Demo account
+                    </button>
+
                 </div>
+
+
             }
 
         </>

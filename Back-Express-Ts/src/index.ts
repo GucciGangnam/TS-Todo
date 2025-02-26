@@ -15,6 +15,7 @@ dotenv.config();
 export const app = express();
 
 const allowedOrigin = process.env.FRONT_END_URL;
+console.log("Allowed Origin:", allowedOrigin); // Added to debug live cors error
 app.use(
     cors({
         origin: allowedOrigin,
